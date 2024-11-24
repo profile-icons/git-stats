@@ -55,9 +55,13 @@ class EnvironmentVariables:
             self.exclude_langs = {x.strip() for x in exclude_langs.split(",")}
 
         if exclude_repo_langs is None:
-            self.exclude_repo_langs: set[str] = set()
+            self.exclude_repo_langs: dict[str, set[str]] = dict()
         else:
-            self.exclude_repo_langs = {x.strip() for x in exclude_repo_langs.split(",")}
+            self.exclude_repo_langs = {
+                y[0].strip(): (set(i.lower() for i in y[1:]) if len(y) > 1 else set())
+                for x in exclude_repo_langs.split(",")
+                if (y := x.split("--"))
+            }
 
         self.is_include_forked_repos: bool = (
             not not is_include_forked_repos

@@ -207,6 +207,23 @@ class GitHubRepoStats(object):
         for k, v in self._languages.items():
             v["prop"]: float = 100 * (v.get("size", 0) / langs_total)
 
+    def __exclude_repo_langs(
+        self,
+        repo_name: str,
+        lang_name: str,
+        languages: dict[str, dict[str, float | str]],
+    ) -> bool:
+        if repo_name in self.environment_vars.exclude_repo_langs.keys():
+            if (
+                lang_name in languages
+                and not self.environment_vars.exclude_repo_langs[repo_name]
+                or lang_name.lower()
+                in self.environment_vars.exclude_repo_langs[repo_name]
+            ):
+                self._exclude_repo_languages.add(lang_name)
+                return True
+        return False
+
     async def repo_stats(self, repos: list[dict]) -> None:
         """
         Gathers statistical data from fetches for repos user is associated with on GitHub
@@ -231,8 +248,9 @@ class GitHubRepoStats(object):
                 lang_name: str = lang.get("node", {}).get("name", "Other")
                 languages: dict[str, dict[str, float | str]] = await self.languages
 
-                if repo_name in self.environment_vars.exclude_repo_langs:
-                    self._exclude_repo_languages.add(lang_name)
+                if self.__exclude_repo_langs(
+                    repo_name=repo_name, lang_name=lang_name, languages=languages
+                ):
                     continue
 
                 if lang_name in self.environment_vars.exclude_langs:
@@ -281,9 +299,9 @@ class GitHubRepoStats(object):
                 for lang_name, size in langs.items():
                     languages: dict[str, dict[str, float | str]] = await self.languages
 
-                    if repo_name in self.environment_vars.exclude_repo_langs:
-                        if lang_name in languages:
-                            self._exclude_repo_languages.add(lang_name)
+                    if self.__exclude_repo_langs(
+                        repo_name=repo_name, lang_name=lang_name, languages=languages
+                    ):
                         continue
 
                     if lang_name in self.environment_vars.exclude_langs:
@@ -426,7 +444,7 @@ class GitHubRepoStats(object):
             .get("contributionYears", [])
         )
 
-        by_year: list[dict[str, int]] = list(
+        by_year = (
             (
                 await self.queries.query(
                     generated_query=GitHubApiQueries.all_contributions(years=years)

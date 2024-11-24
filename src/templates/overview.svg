@@ -178,7 +178,7 @@
                 <span>Repos contributed [% collab]</span>
               </td>
               <td>
-                <span>{{ repos }}</span>
+                <span>{{ repos_str }}</span>
               </td>
             </tr>
 

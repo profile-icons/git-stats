@@ -127,13 +127,14 @@ Generate regularly updated visualizations of user and repository statistics from
   * example:
     * `HTML,Jupyter Notebook,Makefile,Dockerfile`
 * ### Optional Secret *Name*: `EXCLUDED_REPO_LANGS`
-  For excluding all language statistics specific to a repository from being included in the generated visualizations
+  For excluding any/all language statistics specific to a repository from being included in the generated visualizations
   
   **Instructions**:
   * enter *Value* in the following format (separated by commas):
-    * `[owner/repo],[owner/repo],...,[owner/repo]`
+    * `[owner/repo--language...--language],[owner/repo--language...--language],...,[owner/repo--language...--language]`
+    * `--language` denotes a language in the repository to be excluded from stats or exclude this for all repo languages
   * example:
-    * `jstrieb/github-stats,rahul-jha98/github-stats-transparent,idiotWu/stats`
+    * `jstrieb/github-stats--python,rahul-jha98/github-stats-transparent,idiotWu/stats--python--shell`
 * ### Optional Secret *Name*: `IS_INCLUDE_FORKED_REPOS`
   Boolean option for including forked repositories in the generated statistic visualizations. These could repeat statistical calculations
     - `false` by default
