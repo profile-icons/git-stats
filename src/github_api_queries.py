@@ -50,7 +50,7 @@ class GitHubApiQueries(object):
         try:
             async with self.semaphore:
                 r_async = await self.session.post(
-                    self.__GITHUB_API_URL + self.__GRAPHQL_PATH,
+                    url=self.__GITHUB_API_URL + self.__GRAPHQL_PATH,
                     headers=self.headers,
                     json={"query": generated_query},
                 )
@@ -64,7 +64,7 @@ class GitHubApiQueries(object):
             # Fall back on non-async requests
             async with self.semaphore:
                 r_requests = post(
-                    self.__GITHUB_API_URL + self.__GRAPHQL_PATH,
+                    url=self.__GITHUB_API_URL + self.__GRAPHQL_PATH,
                     headers=self.headers,
                     json={"query": generated_query},
                 )
@@ -97,8 +97,8 @@ class GitHubApiQueries(object):
                         params=tuple(params.items()),
                     )
 
-                if r_async.status == HTTPStatus.ACCEPTED:
-                    print(f"A path returned {HTTPStatus.ACCEPTED}. Retrying...")
+                if r_async.status == HTTPStatus.ACCEPTED.value:
+                    print(f"A path returned {HTTPStatus.ACCEPTED.value}. Retrying...")
                     await sleep(self.__ASYNCIO_SLEEP_TIME)
                     continue
 
@@ -117,15 +117,17 @@ class GitHubApiQueries(object):
                         params=tuple(params.items()),
                     )
 
-                    if r_requests.status_code == HTTPStatus.ACCEPTED:
-                        print(f"A path returned {HTTPStatus.ACCEPTED}. Retrying...")
+                    if r_requests.status_code == HTTPStatus.ACCEPTED.value:
+                        print(
+                            f"A path returned {HTTPStatus.ACCEPTED.value}. Retrying..."
+                        )
                         await sleep(self.__ASYNCIO_SLEEP_TIME)
                         continue
-                    elif r_requests.status_code == HTTPStatus.OK:
+                    elif r_requests.status_code == HTTPStatus.OK.value:
                         return r_requests.json()
 
         print(
-            f"Too many {HTTPStatus.ACCEPTED}s. Data for this repository will be incomplete."
+            f"Too many {HTTPStatus.ACCEPTED.value}s. Data for this repository will be incomplete."
         )
         return dict()
 
@@ -248,8 +250,8 @@ class GitHubApiQueries(object):
         """
         return f"""
             year{year}: contributionsCollection(
-            from: '{year}-01-01T00:00:00Z',
-            to: '{int(year) + 1}-01-01T00:00:00Z'
+            from: "{year}-01-01T00:00:00Z",
+            to: "{int(year) + 1}-01-01T00:00:00Z"
             ) {{
                 contributionCalendar {{
                     totalContributions
