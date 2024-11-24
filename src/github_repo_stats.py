@@ -266,7 +266,6 @@ class GitHubRepoStats(object):
                         "occurrences": 1,
                         "color": lang.get("node", {}).get("color"),
                     }
-                print(repo_name, lang_name, languages[lang_name]["size"])
 
     async def manually_added_repo_stats(self) -> None:
         """
@@ -318,7 +317,6 @@ class GitHubRepoStats(object):
                             "occurrences": 1,
                             "color": lang_cols.get(lang_name).get("color"),
                         }
-                    print(repo_name, lang_name, languages[lang_name]["size"])
 
     @property
     async def name(self) -> str:
