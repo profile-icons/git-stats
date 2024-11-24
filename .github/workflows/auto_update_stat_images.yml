@@ -27,11 +27,11 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
-    # Run using Python 3.12 for consistency and aiohttp
-    - name: Set up Python 3.12
+    # Run using Python 3.13 for consistency and aiohttp
+    - name: Set up Python 3.13
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.13'
         architecture: 'x64'
         cache: pip
         cache-dependency-path: '**/requirements.txt'
@@ -59,15 +59,16 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         EXCLUDED: ${{ secrets.EXCLUDED }}
         EXCLUDED_LANGS: ${{ secrets.EXCLUDED_LANGS }}
-        INCLUDE_FORKED_REPOS: ${{ secrets.INCLUDE_FORKED_REPOS }}
-        EXCLUDE_CONTRIB_REPOS: ${{ secrets.EXCLUDE_CONTRIB_REPOS }}
-        EXCLUDE_ARCHIVE_REPOS: ${{ secrets.EXCLUDE_ARCHIVE_REPOS }}
-        EXCLUDE_PRIVATE_REPOS: ${{ secrets.EXCLUDE_PRIVATE_REPOS }}
-        EXCLUDE_PUBLIC_REPOS: ${{ secrets.EXCLUDE_PUBLIC_REPOS }}
+        EXCLUDED_REPO_LANGS: ${{ secrets.EXCLUDED_REPO_LANGS }}
+        IS_INCLUDE_FORKED_REPOS: ${{ secrets.IS_INCLUDE_FORKED_REPOS }}
+        IS_EXCLUDE_CONTRIB_REPOS: ${{ secrets.IS_EXCLUDE_CONTRIB_REPOS }}
+        IS_EXCLUDE_ARCHIVE_REPOS: ${{ secrets.IS_EXCLUDE_ARCHIVE_REPOS }}
+        IS_EXCLUDE_PRIVATE_REPOS: ${{ secrets.IS_EXCLUDE_PRIVATE_REPOS }}
+        IS_EXCLUDE_PUBLIC_REPOS: ${{ secrets.IS_EXCLUDE_PUBLIC_REPOS }}
         REPO_VIEWS: ${{ secrets.REPO_VIEWS }}
         LAST_VIEWED: ${{ secrets.LAST_VIEWED }}
         FIRST_VIEWED: ${{ secrets.FIRST_VIEWED }}
-        STORE_REPO_VIEWS: ${{ secrets.STORE_REPO_VIEWS }}
+        IS_STORE_REPO_VIEWS: ${{ secrets.IS_STORE_REPO_VIEWS }}
         MORE_COLLABS: ${{ secrets.MORE_COLLABS }}
         MORE_REPOS: ${{ secrets.MORE_REPOS }}
         ONLY_INCLUDED: ${{ secrets.ONLY_INCLUDED }}

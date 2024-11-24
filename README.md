@@ -126,7 +126,15 @@ Generate regularly updated visualizations of user and repository statistics from
     * `[language],[language],...,[language]`
   * example:
     * `HTML,Jupyter Notebook,Makefile,Dockerfile`
-* ### Optional Secret *Name*: `INCLUDE_FORKED_REPOS`
+* ### Optional Secret *Name*: `EXCLUDED_REPO_LANGS`
+  For excluding all language statistics specific to a repository from being included in the generated visualizations
+  
+  **Instructions**:
+  * enter *Value* in the following format (separated by commas):
+    * `[owner/repo],[owner/repo],...,[owner/repo]`
+  * example:
+    * `jstrieb/github-stats,rahul-jha98/github-stats-transparent,idiotWu/stats`
+* ### Optional Secret *Name*: `IS_INCLUDE_FORKED_REPOS`
   Boolean option for including forked repositories in the generated statistic visualizations. These could repeat statistical calculations
     - `false` by default
 
@@ -135,7 +143,7 @@ Generate regularly updated visualizations of user and repository statistics from
     * `<boolean>`
   * examples:
     * `true`
-* ### Optional Secret *Name*: `EXCLUDE_CONTRIB_REPOS`
+* ### Optional Secret *Name*: `IS_EXCLUDE_CONTRIB_REPOS`
   Boolean option for excluding non-owned repositories contributed to in the generated statistic visualizations
     - `false` by default
 
@@ -144,7 +152,7 @@ Generate regularly updated visualizations of user and repository statistics from
     * `<boolean>`
   * examples:
     * `true`
-* ### Optional Secret *Name*: `EXCLUDE_ARCHIVE_REPOS`
+* ### Optional Secret *Name*: `IS_EXCLUDE_ARCHIVE_REPOS`
   Boolean option for excluding archived repositories in the generated statistic visualizations
     - `false` by default
     
@@ -153,7 +161,7 @@ Generate regularly updated visualizations of user and repository statistics from
     * `<boolean>`
   * examples:
     * `true`
-* ### Optional Secret *Name*: `EXCLUDE_PRIVATE_REPOS`
+* ### Optional Secret *Name*: `IS_EXCLUDE_PRIVATE_REPOS`
   Boolean option for excluding private repositories in the generated statistic visualizations
     - for when you want to keep those secrets locked away from prying eyes
     - `false` by default
@@ -163,7 +171,7 @@ Generate regularly updated visualizations of user and repository statistics from
     * `<boolean>`
   * examples:
     * `true`
-* ### Optional Secret *Name*: `EXCLUDE_PUBLIC_REPOS`
+* ### Optional Secret *Name*: `IS_EXCLUDE_PUBLIC_REPOS`
   Boolean option for excluding public repositories in the generated statistic visualizations
     - `false` by default
     
@@ -223,7 +231,7 @@ Generate regularly updated visualizations of user and repository statistics from
     * `[owner/repo],[owner/repo],...,[owner/repo]`
   * example:
     * `imported_ghosted/large_A+_collab_project,slave_trade/larger_A++_project`
-* ### Optional Secret *Name*: `STORE_REPO_VIEWS`
+* ### Optional Secret *Name*: `IS_STORE_REPO_VIEWS`
   Boolean for storing generated repository view statistic visualization data beyond the 14 day-limit GitHub API allows 
     - `true` by default
 

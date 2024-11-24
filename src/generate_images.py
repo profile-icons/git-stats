@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 
-from asyncio import run, gather
 from aiohttp import ClientSession
+from asyncio import run, gather
 from os import mkdir, getenv
 from os.path import isdir
 from re import sub
 
-from src.env_vars import EnvironmentVariables
 from src.github_repo_stats import GitHubRepoStats
+from src.env_vars import EnvironmentVariables
 
-OUTPUT_DIR = "generated_images"  # directory for storing generated images
-TEMPLATE_PATH = "src/templates/"
-OVERVIEW_FILE_NAME = "overview.svg"
-LANGUAGES_FILE_NAME = "languages.svg"
-TXT_SPACER_MAX_LEN = 7
-MAX_NAME_LEN = 18
+OUTPUT_DIR: str = "generated_images"  # directory for storing generated images
+TEMPLATE_PATH: str = "src/templates/"
+OVERVIEW_FILE_NAME: str = "overview.svg"
+LANGUAGES_FILE_NAME: str = "languages.svg"
+TXT_SPACER_MAX_LEN: int = 7
+MAX_NAME_LEN: int = 18
 
 
 ###############################################################################
@@ -30,15 +30,15 @@ def generate_output_folder() -> None:
         mkdir(OUTPUT_DIR)
 
 
-def add_unit(num):
+def add_unit(num: str | int) -> str:
     """
     Add units to large numbers to reduce length of string
     Example: 12,456 to 12.46K
     """
-    metric_units = ["K", "M", "B", "T"]
-    metric_units_index = -1
+    metric_units: list[str] = ["K", "M", "B", "T"]
+    metric_units_index: int = -1
 
-    num = int(num.replace(",", ""))
+    num: int = int(num.replace(",", "")) if isinstance(num, str) else num
 
     if num >= 10000:
         while num >= 1000:
@@ -54,9 +54,9 @@ def add_unit(num):
 
 
 class GenerateImages:
-    def __init__(self):
-        access_token = getenv("ACCESS_TOKEN")
-        user = getenv("GITHUB_ACTOR")
+    def __init__(self) -> None:
+        access_token: str = getenv("ACCESS_TOKEN")
+        user: str = getenv("GITHUB_ACTOR")
 
         if not access_token:
             raise Exception("A personal access token is required to proceed!")
@@ -64,12 +64,12 @@ class GenerateImages:
         if not user:
             raise RuntimeError("Environment variable GITHUB_ACTOR must be set")
 
-        self.__environment = EnvironmentVariables(
+        self.__environment: EnvironmentVariables = EnvironmentVariables(
             username=user, access_token=access_token
         )
-        self.__stats = None
+        self.__stats: GitHubRepoStats | None = None
 
-        run(self.start())
+        run(main=self.start())
 
     async def start(self) -> None:
         """
@@ -86,13 +86,13 @@ class GenerateImages:
         Generate an SVG badge with summary statistics
         """
         with open("{}{}".format(TEMPLATE_PATH, OVERVIEW_FILE_NAME), "r") as f:
-            output = f.read()
+            output: str = f.read()
 
         # svg name display: user's given name first, otherwise username in any best fit variation as depicted below
-        name = await self.__stats.name
+        name: str = await self.__stats.name
         # if name too long for svg dimensions
         if len(name + ("'" if name[-1].lower() == "s" else "'s")) > MAX_NAME_LEN:
-            names = name.split(" ")
+            names: list[str] = name.split(" ")
             # if too long name contains just one word or forename initials with full surname still too long
             if (
                 len(names) == 1
@@ -106,11 +106,13 @@ class GenerateImages:
             ):
                 # if username also too long for svg dimensions
                 if (
-                    self.__stats.environment_vars.username
-                    + (
-                        "'"
-                        if self.__stats.environment_vars.username[-1].lower() == "s"
-                        else "'s"
+                    len(
+                        self.__stats.environment_vars.username
+                        + (
+                            "'"
+                            if self.__stats.environment_vars.username[-1].lower() == "s"
+                            else "'s"
+                        )
                     )
                     > MAX_NAME_LEN
                 ):
@@ -146,74 +148,84 @@ class GenerateImages:
         else:
             # display the user's full forename and surname if when combined are not too long for the svg dimensions
             name += "'" if name[-1].lower() == "s" else "'s"
-        output = sub("{{ name }}", name, output)
+        output: str = sub(pattern="{{ name }}", repl=name, string=output)
 
-        views = f"{await self.__stats.views:,}"
-        output = sub("{{ views }}", views, output)
+        views: str = f"{await self.__stats.views:,}"
+        output = sub(pattern="{{ views }}", repl=views, string=output)
 
-        forks = f"{await self.__stats.forks:,}"
+        forks: str = f"{await self.__stats.forks:,}"
         forks = forks if len(str(forks)) < TXT_SPACER_MAX_LEN else add_unit(forks)
-        stars = f"{await self.__stats.stargazers:,}"
+        stars: str = f"{await self.__stats.stargazers:,}"
         stars = stars if len(str(stars)) < TXT_SPACER_MAX_LEN else add_unit(stars)
-        forks_and_stars = (
+        forks_and_stars: str = (
             forks
             + " " * max(1, TXT_SPACER_MAX_LEN - len(str(forks)) + 1)
             + "|   "
             + stars
         )
-        output = sub("{{ forks_and_stars }}", forks_and_stars, output)
+        output = sub(
+            pattern="{{ forks_and_stars }}", repl=forks_and_stars, string=output
+        )
 
-        contributions = f"{await self.__stats.total_contributions:,}"
-        output = sub("{{ contributions }}", contributions, output)
+        contributions: str = f"{await self.__stats.total_contributions:,}"
+        output = sub(pattern="{{ contributions }}", repl=contributions, string=output)
 
-        changed = (await self.__stats.lines_changed)[0] + (
+        changed: int = (await self.__stats.lines_changed)[0] + (
             await self.__stats.lines_changed
         )[1]
-        output = sub("{{ lines_changed }}", f"{changed:,}", output)
+        output = sub(pattern="{{ lines_changed }}", repl=f"{changed:,}", string=output)
 
-        avg_contribution_percent = (
+        avg_contribution_percent: str = (
             f"{await self.__stats.avg_contribution_percent} "
             f"[{await self.__stats.avg_contribution_percent_weighted}]"
         )
-        output = sub("{{ avg_contribution_percent }}", avg_contribution_percent, output)
+        output = sub(
+            pattern="{{ avg_contribution_percent }}",
+            repl=avg_contribution_percent,
+            string=output,
+        )
 
-        num_repos = len(await self.__stats.repos)
+        num_repos: int = len(await self.__stats.repos)
         num_collab_repos = len(await self.__stats.contributed_collab_repos)
-        repos = (
+        repos: int = (
             num_repos
             if len(str(num_repos)) < TXT_SPACER_MAX_LEN
             else add_unit(num_repos)
         )
-        repos = f"{repos:,} [{'%g' % round(num_collab_repos / num_repos * 100, 2)}%]"
-        output = sub("{{ repos }}", repos, output)
+        repos_str: str = (
+            f"{repos:,} [{'%g' % round(num_collab_repos / num_repos * 100, 2)}%]"
+        )
+        output = sub(pattern="{{ repos_str }}", repl=repos_str, string=output)
 
-        collaborators_and_contributors = f"{await self.__stats.collaborators:,}"
+        collaborators_and_contributors: str = f"{await self.__stats.collaborators:,}"
         output = sub(
-            "{{ collaborators_and_contributors }}",
-            collaborators_and_contributors,
-            output,
+            pattern="{{ collaborators_and_contributors }}",
+            repl=collaborators_and_contributors,
+            string=output,
         )
 
-        views_from = await self.__stats.views_from_date
+        views_from: str = await self.__stats.views_from_date
         output = sub(
-            "{{ views_from_date }}", f"Repo views (as of {views_from})", output
+            pattern="{{ views_from_date }}",
+            repl=f"Repo views (as of {views_from})",
+            string=output,
         )
 
-        # pull_requests = f"{await self.__stats.pull_requests:,}"
+        # pull_requests: str = f'{await self.__stats.pull_requests:,}'
         # pull_requests = (
         #     pull_requests
         #     if len(str(pull_requests)) < TXT_SPACER_MAX_LEN
         #     else add_unit(pull_requests)
         # )
-        # issues = f"{await self.__stats.issues:,}"
+        # issues: str = f'{await self.__stats.issues:,}'
         # issues = issues if len(str(issues)) < TXT_SPACER_MAX_LEN else add_unit(issues)
-        # pull_requests_and_issues = (
+        # pull_requests_and_issues: str = (
         #     pull_requests
-        #     + " " * max(1, TXT_SPACER_MAX_LEN - len(str(pull_requests)) + 1)
-        #     + "|   "
+        #     + ' ' * max(1, TXT_SPACER_MAX_LEN - len(str(pull_requests)) + 1)
+        #     + '|   '
         #     + issues
         # )
-        # output = sub("{{ pull_requests_and_issues }}", pull_requests_and_issues, output)
+        # output = sub('{{ pull_requests_and_issues }}', pull_requests_and_issues, output)
 
         generate_output_folder()
         with open("{}/{}".format(OUTPUT_DIR, OVERVIEW_FILE_NAME), "w") as f:
@@ -224,25 +236,25 @@ class GenerateImages:
         Generate an SVG badge with summary languages used
         """
         with open("{}{}".format(TEMPLATE_PATH, LANGUAGES_FILE_NAME), "r") as f:
-            output = f.read()
+            output: str = f.read()
 
-        progress = ""
-        lang_list = ""
-        sorted_languages = sorted(
+        progress: str = ""
+        lang_list: str = ""
+        sorted_languages: list = sorted(
             (await self.__stats.languages).items(),
             reverse=True,
             key=lambda t: t[1].get("size"),
         )
 
-        lang_count = str(len(sorted_languages))
-        num_excluded_languages = len(await self.__stats.excluded_languages)
+        lang_count: str = str(len(sorted_languages))
+        num_excluded_languages: int = len(await self.__stats.excluded_languages)
         if num_excluded_languages > 0:
             lang_count += " [+" + str(num_excluded_languages) + "]"
 
-        delay_between = 150
+        delay_between: int = 150
 
         for i, (lang, data) in enumerate(sorted_languages):
-            color = data.get("color")
+            color: str = data.get("color")
             color = color if color is not None else "#000000"
             progress += (
                 f'<span style="background-color: {color};'
@@ -270,11 +282,11 @@ class GenerateImages:
                     </span>
             </li>"""
 
-        output = sub(r"{{ lang_count }}", lang_count, output)
+        output = sub(pattern=r"{{ lang_count }}", repl=lang_count, string=output)
 
-        output = sub(r"{{ progress }}", progress, output)
+        output = sub(pattern=r"{{ progress }}", repl=progress, string=output)
 
-        output = sub(r"{{ lang_list }}", lang_list, output)
+        output = sub(pattern=r"{{ lang_list }}", repl=lang_list, string=output)
 
         generate_output_folder()
         with open("{}/{}".format(OUTPUT_DIR, LANGUAGES_FILE_NAME), "w") as f:

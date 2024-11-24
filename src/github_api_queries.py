@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
+from requests import post, get, models
 from asyncio import Semaphore, sleep
-from requests import post, get
 from aiohttp import ClientSession
-from typing import Dict, Optional, List
+from http import HTTPStatus
+from typing import Optional
 from json import loads
 
 
@@ -18,11 +19,11 @@ class GitHubApiQueries(object):
     API. Also includes functions to dynamically generate GraphQL queries.
     """
 
-    __GITHUB_API_URL = "https://api.github.com/"
-    __GRAPHQL_PATH = "graphql"
-    __REST_QUERY_LIMIT = 60
-    __ASYNCIO_SLEEP_TIME = 2
-    __DEFAULT_MAX_CONNECTIONS = 10
+    __GITHUB_API_URL: str = "https://api.github.com/"
+    __GRAPHQL_PATH: str = "graphql"
+    __REST_QUERY_LIMIT: int = 60
+    __ASYNCIO_SLEEP_TIME: int = 2
+    __DEFAULT_MAX_CONNECTIONS: int = 10
 
     def __init__(
         self,
@@ -30,16 +31,16 @@ class GitHubApiQueries(object):
         access_token: str,
         session: ClientSession,
         max_connections: int = __DEFAULT_MAX_CONNECTIONS,
-    ):
-        self.username = username
-        self.access_token = access_token
-        self.session = session
-        self.semaphore = Semaphore(max_connections)
-        self.headers = {
+    ) -> None:
+        self.username: str = username
+        self.access_token: str = access_token
+        self.session: ClientSession = session
+        self.semaphore: Semaphore = Semaphore(max_connections)
+        self.headers: dict[str, str] = {
             "Authorization": f"Bearer {self.access_token}",
         }
 
-    async def query(self, generated_query: str) -> Dict:
+    async def query(self, generated_query: str) -> dict[str, dict]:
         """
         Make a request to the GraphQL API using the authentication token from
         the environment
@@ -53,7 +54,7 @@ class GitHubApiQueries(object):
                     headers=self.headers,
                     json={"query": generated_query},
                 )
-            result = await r_async.json()
+            result: dict[str, dict] = await r_async.json()
 
             if result is not None:
                 return result
@@ -73,7 +74,9 @@ class GitHubApiQueries(object):
                     return result
         return dict()
 
-    async def query_rest(self, path: str, params: Optional[Dict] = None) -> Dict:
+    async def query_rest(
+        self, path: str, params: Optional[dict] = None
+    ) -> dict[str, str | int | dict | list[dict[str, str]]] | list[dict[str, any]]:
         """
         Make a request to the REST API
         :param path: API path to query
@@ -94,12 +97,12 @@ class GitHubApiQueries(object):
                         params=tuple(params.items()),
                     )
 
-                if r_async.status == 202:
-                    print("A path returned 202. Retrying...")
+                if r_async.status == HTTPStatus.ACCEPTED:
+                    print(f"A path returned {HTTPStatus.ACCEPTED}. Retrying...")
                     await sleep(self.__ASYNCIO_SLEEP_TIME)
                     continue
 
-                result = await r_async.json()
+                result: dict[str, str | dict] = await r_async.json()
 
                 if result is not None:
                     return result
@@ -114,14 +117,16 @@ class GitHubApiQueries(object):
                         params=tuple(params.items()),
                     )
 
-                    if r_requests.status_code == 202:
-                        print("A path returned 202. Retrying...")
+                    if r_requests.status_code == HTTPStatus.ACCEPTED:
+                        print(f"A path returned {HTTPStatus.ACCEPTED}. Retrying...")
                         await sleep(self.__ASYNCIO_SLEEP_TIME)
                         continue
-                    elif r_requests.status_code == 200:
+                    elif r_requests.status_code == HTTPStatus.OK:
                         return r_requests.json()
 
-        print("Too many 202s. Data for this repository will be incomplete.")
+        print(
+            f"Too many {HTTPStatus.ACCEPTED}s. Data for this repository will be incomplete."
+        )
         return dict()
 
     @staticmethod
@@ -143,8 +148,8 @@ class GitHubApiQueries(object):
                         direction: DESC
                     }},
                     after: {
-        "null" if owned_cursor is None
-        else '"' + owned_cursor + '"'
+        'null' if owned_cursor is None
+        else """ + owned_cursor + """
         }) {{
                         pageInfo {{
                             hasNextPage
@@ -188,8 +193,8 @@ class GitHubApiQueries(object):
                         PULL_REQUEST_REVIEW
                     ]
                     after: {
-        "null" if contrib_cursor is None
-        else '"' + contrib_cursor + '"'}) {{
+        'null' if contrib_cursor is None
+        else """ + contrib_cursor + """}) {{
                         pageInfo {{
                             hasNextPage
                             endCursor
@@ -243,8 +248,8 @@ class GitHubApiQueries(object):
         """
         return f"""
             year{year}: contributionsCollection(
-            from: "{year}-01-01T00:00:00Z",
-            to: "{int(year) + 1}-01-01T00:00:00Z"
+            from: '{year}-01-01T00:00:00Z',
+            to: '{int(year) + 1}-01-01T00:00:00Z'
             ) {{
                 contributionCalendar {{
                     totalContributions
@@ -252,12 +257,12 @@ class GitHubApiQueries(object):
             }}"""
 
     @classmethod
-    def all_contributions(cls, years: List[str]) -> str:
+    def all_contributions(cls, years: list[str]) -> str:
         """
         :param years: list of years to get contributions for
         :return: query to retrieve contribution information for all user years
         """
-        by_years = "\n".join(map(cls.contributions_by_year, years))
+        by_years: str = "\n".join(map(cls.contributions_by_year, years))
         return f"""
             query {{
                 viewer {{
@@ -266,8 +271,8 @@ class GitHubApiQueries(object):
             }}"""
 
     @staticmethod
-    def get_language_colors():
-        url = get(
+    def get_language_colors() -> dict[str, dict[str, str]]:
+        url: models.Response = get(
             "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json"
         )
         return loads(url.text)
