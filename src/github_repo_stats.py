@@ -551,8 +551,12 @@ class GitHubRepoStats(object):
                 repo_total_changes_arr.append(repo_total_changes)
 
         if sum(author_contribution_percentages) > 0:
-            self._avg_percent: str = f"{(sum(author_contribution_percentages) / len(repo_total_changes_arr) * 100):0.2f}%"
-            self._avg_percent_weighted: str = f"{(sum(author_contribution_percentages_weighted) / len(repo_total_changes_arr) * 100):0.2f}%"
+            self._avg_percent: str = (
+                f"{(sum(author_contribution_percentages) / len(repo_total_changes_arr) * 100):0.2f}%"
+            )
+            self._avg_percent_weighted: str = (
+                f"{(sum(author_contribution_percentages_weighted) / len(repo_total_changes_arr) * 100):0.2f}%"
+            )
         else:
             self._avg_percent_weighted = self._avg_percent = "N/A"
 
@@ -708,7 +712,9 @@ class GitHubRepoStats(object):
 
         if not self._is_fetch_rate_limit_exceeded:
             for repo in await self.repos:
-                end_point: str = f"/repos/{repo}/pulls?state=all&involved={self.environment_vars.username}"
+                end_point: str = (
+                    f"/repos/{repo}/pulls?state=all&involved={self.environment_vars.username}"
+                )
 
                 for pr_data in await self.queries.query_rest(path=end_point):
                     try:
@@ -744,7 +750,9 @@ class GitHubRepoStats(object):
 
         if not self._is_fetch_rate_limit_exceeded:
             for repo in await self.repos:
-                end_point: str = f"/repos/{repo}/issues?state=all&involved={self.environment_vars.username}"
+                end_point: str = (
+                    f"/repos/{repo}/issues?state=all&involved={self.environment_vars.username}"
+                )
 
                 for issue_data in await self.queries.query_rest(path=end_point):
                     try:
