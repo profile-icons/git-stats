@@ -162,7 +162,7 @@ class GitHubRepoStats(object):
                         .get("viewer", {})
                         .get("login", self._NO_NAME)
                     )
-            print('name', self._name)
+            print("name", self._name)
 
             owned_repos: dict[str, dict | list[dict]] = (
                 raw_results.get("data", {}).get("viewer", {}).get("repositories", {})

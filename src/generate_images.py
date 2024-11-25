@@ -57,26 +57,19 @@ def format_name(name: str, user_name: str) -> str:
         names: list[str] = name.split(" ")
         # if too long name contains just one word or forename initials with full surname still too long
         if (
-                len(names) == 1
-                or len(
-            names[0][0]
-            + ". "
-            + names[-1]
-            + ("'" if names[-1][-1].lower() == "s" else "'s")
-        )
-                > MAX_NAME_LEN
+            len(names) == 1
+            or len(
+                names[0][0]
+                + ". "
+                + names[-1]
+                + ("'" if names[-1][-1].lower() == "s" else "'s")
+            )
+            > MAX_NAME_LEN
         ):
             # if username also too long for svg dimensions
             if (
-                    len(
-                        user_name
-                        + (
-                                "'"
-                                if user_name[-1].lower() == "s"
-                                else "'s"
-                        )
-                    )
-                    > MAX_NAME_LEN
+                len(user_name + ("'" if user_name[-1].lower() == "s" else "'s"))
+                > MAX_NAME_LEN
             ):
                 # display forename to max possible len if name a single word, or forename initials with full surname
                 name = (
@@ -89,23 +82,19 @@ def format_name(name: str, user_name: str) -> str:
                             if i <= (MAX_NAME_LEN - 4) / 3
                         ]
                     )
-                         + names[-1][0]
-                         + ".'s"
+                    + names[-1][0]
+                    + ".'s"
                 )
             else:
                 # display the username instead of user's name if forename initials with full surname still too long
-                name = user_name + (
-                    "'"
-                    if user_name[-1].lower() == "s"
-                    else "'s"
-                )
+                name = user_name + ("'" if user_name[-1].lower() == "s" else "'s")
         else:
             # display the forename initials with full surname if full name too long but not surname with initials
             name = (
-                    names[0][0]
-                    + ". "
-                    + names[-1]
-                    + ("'" if names[-1][-1].lower() == "s" else "'s")
+                names[0][0]
+                + ". "
+                + names[-1]
+                + ("'" if names[-1][-1].lower() == "s" else "'s")
             )
     else:
         # display the user's full forename and surname if when combined are not too long for the svg dimensions
@@ -154,7 +143,10 @@ class GenerateImages:
             output: str = f.read()
 
         # svg name display: user's given name first, otherwise username in any best fit variation as depicted below
-        name: str = format_name(name=await self.__stats.name, user_name=self.__stats.environment_vars.username)
+        name: str = format_name(
+            name=await self.__stats.name,
+            user_name=self.__stats.environment_vars.username,
+        )
         output = sub(pattern="{{ name }}", repl=name, string=output)
 
         views: str = f"{await self.__stats.views:,}"
