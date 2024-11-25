@@ -72,6 +72,7 @@ class GitHubRepoStats(object):
         contributors: int = max(len(await self.contributors) - 1, 0)
 
         return f"""GitHub Repository Statistics:
+        Name: {await self.name}
         Stargazers: {await self.stargazers:,}
         Forks: {await self.forks:,}
         All-time contributions: {await self.total_contributions:,}
@@ -151,15 +152,17 @@ class GitHubRepoStats(object):
             )
             raw_results = raw_results if raw_results is not None else {}
 
-            self._name: str | None = (
-                raw_results.get("data", {}).get("viewer", {}).get("name", None)
-            )
-            if self._name is None:
+            if not self._name:
                 self._name = (
-                    raw_results.get("data", {})
-                    .get("viewer", {})
-                    .get("login", self._NO_NAME)
+                    raw_results.get("data", {}).get("viewer", {}).get("name", None)
                 )
+                if self._name is None:
+                    self._name = (
+                        raw_results.get("data", {})
+                        .get("viewer", {})
+                        .get("login", self._NO_NAME)
+                    )
+            print('name', self._name)
 
             owned_repos: dict[str, dict | list[dict]] = (
                 raw_results.get("data", {}).get("viewer", {}).get("repositories", {})
