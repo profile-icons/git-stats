@@ -147,8 +147,7 @@ class GitHubRepoStats(object):
         while True:
             raw_results: dict[str, dict] = await self.queries.query(
                 generated_query=GitHubApiQueries.repos_overview(
-                    owned_cursor=next_owned,
-                    contrib_cursor=next_contrib
+                    owned_cursor=next_owned, contrib_cursor=next_contrib
                 )
             )
             raw_results = raw_results if raw_results else {}
