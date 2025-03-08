@@ -19,8 +19,8 @@ class GitHubApiQueries(object):
     API. Also includes functions to dynamically generate GraphQL queries.
     """
 
-    __GITHUB_API_URL: str = "https://api.github.com/"
-    __GRAPHQL_PATH: str = "graphql"
+    __GITHUB_API_URL: str = 'https://api.github.com/'
+    __GRAPHQL_PATH: str = 'graphql'
     __REST_QUERY_LIMIT: int = 60
     __ASYNCIO_SLEEP_TIME: int = 2
     __DEFAULT_MAX_CONNECTIONS: int = 10
@@ -37,7 +37,7 @@ class GitHubApiQueries(object):
         self.session: ClientSession = session
         self.semaphore: Semaphore = Semaphore(max_connections)
         self.headers: dict[str, str] = {
-            "Authorization": f"Bearer {self.access_token}",
+            'Authorization': f'Bearer {self.access_token}',
         }
 
     async def query(self, generated_query: str) -> dict[str, dict]:
@@ -52,21 +52,21 @@ class GitHubApiQueries(object):
                 r_async = await self.session.post(
                     url=self.__GITHUB_API_URL + self.__GRAPHQL_PATH,
                     headers=self.headers,
-                    json={"query": generated_query},
+                    json={'query': generated_query},
                 )
             result: dict[str, dict] = await r_async.json()
 
             if result is not None:
                 return result
         except ConnectionError:
-            print("aiohttp failed for GraphQL query")
+            print('aiohttp failed for GraphQL query')
 
             # Fall back on non-async requests
             async with self.semaphore:
                 r_requests = post(
                     url=self.__GITHUB_API_URL + self.__GRAPHQL_PATH,
                     headers=self.headers,
-                    json={"query": generated_query},
+                    json={'query': generated_query},
                 )
                 result = r_requests.json()
 
@@ -86,7 +86,7 @@ class GitHubApiQueries(object):
         for i in range(self.__REST_QUERY_LIMIT):
             if params is None:
                 params = dict()
-            if path.startswith("/"):
+            if path.startswith('/'):
                 path = path[1:]
 
             try:
@@ -98,7 +98,7 @@ class GitHubApiQueries(object):
                     )
 
                 if r_async.status == HTTPStatus.ACCEPTED.value:
-                    print(f"A path returned {HTTPStatus.ACCEPTED.value}. Retrying...")
+                    print(f'A path returned {HTTPStatus.ACCEPTED.value}. Retrying...')
                     await sleep(self.__ASYNCIO_SLEEP_TIME)
                     continue
 
@@ -107,7 +107,7 @@ class GitHubApiQueries(object):
                 if result is not None:
                     return result
             except ConnectionError:
-                print("aiohttp failed for REST query attempt #" + str(i + 1))
+                print('aiohttp failed for REST query attempt #' + str(i + 1))
 
                 # Fall back on non-async requests
                 async with self.semaphore:
@@ -119,7 +119,7 @@ class GitHubApiQueries(object):
 
                     if r_requests.status_code == HTTPStatus.ACCEPTED.value:
                         print(
-                            f"A path returned {HTTPStatus.ACCEPTED.value}. Retrying..."
+                            f'A path returned {HTTPStatus.ACCEPTED.value}. Retrying...'
                         )
                         await sleep(self.__ASYNCIO_SLEEP_TIME)
                         continue
@@ -127,9 +127,22 @@ class GitHubApiQueries(object):
                         return r_requests.json()
 
         print(
-            f"Too many {HTTPStatus.ACCEPTED.value}s. Data for this repository will be incomplete."
+            f'Too many {HTTPStatus.ACCEPTED.value}s. Data for this repository will be incomplete.'
         )
         return dict()
+
+    @staticmethod
+    def get_user() -> str:
+        """
+        :return: GraphQL query with user login and name
+        """
+        return f"""
+            {{
+                viewer {{
+                    login
+                    name
+                }}
+            }}"""
 
     @staticmethod
     def repos_overview(
@@ -142,7 +155,6 @@ class GitHubApiQueries(object):
             {{
                 viewer {{
                     login,
-                    name,
                     repositories(
                     first: 100,
                     orderBy: {{
@@ -275,6 +287,6 @@ class GitHubApiQueries(object):
     @staticmethod
     def get_language_colors() -> dict[str, dict[str, str]]:
         url: models.Response = get(
-            "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json"
+            'https://raw.githubusercontent.com/ozh/github-colors/master/colors.json'
         )
         return loads(url.text)
