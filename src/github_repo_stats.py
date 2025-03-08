@@ -17,11 +17,11 @@ class GitHubRepoStats(object):
     Retrieve and store statistics about GitHub usage.
     """
 
-    _DATE_FORMAT: str = '%Y-%m-%d'
+    _DATE_FORMAT: str = "%Y-%m-%d"
     _EXCLUDED_USER_NAMES: list[str] = [
-        'dependabot[bot]'
+        "dependabot[bot]"
     ]  # exclude bot data from being included in statistical calculations
-    _NO_NAME: str = 'Unknown'
+    _NO_NAME: str = "Unknown"
 
     def __init__(
         self, environment_vars: EnvironmentVariables, session: ClientSession
@@ -62,8 +62,8 @@ class GitHubRepoStats(object):
         :return: summary of all available statistics
         """
         languages: dict[str, float] = await self.languages_proportional
-        formatted_languages: str = '\n\t\t\t- '.join(
-            [f'{k}: {v:0.4f}%' for k, v in languages.items()]
+        formatted_languages: str = "\n\t\t\t- ".join(
+            [f"{k}: {v:0.4f}%" for k, v in languages.items()]
         )
 
         users_lines_changed: tuple[int, int] = await self.lines_changed
@@ -101,12 +101,17 @@ class GitHubRepoStats(object):
         """
         return (
             # repo_name in self._repos
-            (len(self.environment_vars.only_included_owners) > 0
-            and repo_name.split('/')[0] not in self.environment_vars.only_included_owners)
-            or (len(self.environment_vars.only_included_repos) > 0
-            and repo_name not in self.environment_vars.only_included_repos)
+            (
+                len(self.environment_vars.only_included_owners) > 0
+                and repo_name.split("/")[0]
+                not in self.environment_vars.only_included_owners
+            )
+            or (
+                len(self.environment_vars.only_included_repos) > 0
+                and repo_name not in self.environment_vars.only_included_repos
+            )
             or repo_name in self.environment_vars.exclude_repos
-            or repo_name.split('/')[0] in self.environment_vars.exclude_owners
+            or repo_name.split("/")[0] in self.environment_vars.exclude_owners
         )
 
     async def is_repo_type_excluded(
@@ -123,13 +128,13 @@ class GitHubRepoStats(object):
         """
         return (
             not self.environment_vars.is_include_forked_repos
-            and (repo_data.get('isFork') or repo_data.get('fork'))
+            and (repo_data.get("isFork") or repo_data.get("fork"))
             or self.environment_vars.is_exclude_archive_repos
-            and (repo_data.get('isArchived') or repo_data.get('archived'))
+            and (repo_data.get("isArchived") or repo_data.get("archived"))
             or self.environment_vars.is_exclude_private_repos
-            and (repo_data.get('isPrivate') or repo_data.get('private'))
+            and (repo_data.get("isPrivate") or repo_data.get("private"))
             or self.environment_vars.is_exclude_public_repos
-            and (not repo_data.get('isPrivate') or not repo_data.get('private'))
+            and (not repo_data.get("isPrivate") or not repo_data.get("private"))
         )
 
     async def get_stats(self) -> None:
@@ -152,16 +157,22 @@ class GitHubRepoStats(object):
         )
         user_raw_result = user_raw_result if user_raw_result else {}
         if (
-                user_raw_result.get('data', {}) is not None
-                and user_raw_result.get('data', {}).get('viewer', {}) is not None
-                and (
-                        user_raw_result.get('data', {}).get('viewer', {}).get('name', None) is not None or
-                        user_raw_result.get('data', {}).get('viewer', {}).get('user', None) is not None
-                )
+            user_raw_result.get("data", {}) is not None
+            and user_raw_result.get("data", {}).get("viewer", {}) is not None
+            and (
+                user_raw_result.get("data", {}).get("viewer", {}).get("name", None)
+                is not None
+                or user_raw_result.get("data", {}).get("viewer", {}).get("user", None)
+                is not None
+            )
         ):
-            self._name = user_raw_result.get('data', {}).get('viewer', {}).get('name', self._NO_NAME)
-        elif user_raw_result.get('message', '').lower() == 'bad credentials':
-            raise ConnectionRefusedError(f'Unauthorized Error: Invalid Access Token')
+            self._name = (
+                user_raw_result.get("data", {})
+                .get("viewer", {})
+                .get("name", self._NO_NAME)
+            )
+        elif user_raw_result.get("message", "").lower() == "bad credentials":
+            raise ConnectionRefusedError("Unauthorized Error: Invalid Access Token")
 
         while True:
             repo_overview_raw_results: dict[str, dict] = await self.queries.query(
@@ -169,22 +180,25 @@ class GitHubRepoStats(object):
                     owned_cursor=next_owned, contrib_cursor=next_contrib
                 )
             )
-            repo_overview_raw_results = repo_overview_raw_results if repo_overview_raw_results else {}
+            repo_overview_raw_results = (
+                repo_overview_raw_results if repo_overview_raw_results else {}
+            )
 
             if (
-                repo_overview_raw_results.get('data', {}) is not None
-                and repo_overview_raw_results.get('data', {}).get('viewer', {}) is not None
+                repo_overview_raw_results.get("data", {}) is not None
+                and repo_overview_raw_results.get("data", {}).get("viewer", {})
+                is not None
             ):
                 owned_repos: dict[str, dict | list[dict]] = (
-                    repo_overview_raw_results.get('data', {})
-                    .get('viewer', {})
-                    .get('repositories', {})
+                    repo_overview_raw_results.get("data", {})
+                    .get("viewer", {})
+                    .get("repositories", {})
                 )
-                repos: list[dict] = owned_repos.get('nodes', [])
+                repos: list[dict] = owned_repos.get("nodes", [])
                 contrib_repos: dict[str, dict | list] = (
-                    repo_overview_raw_results.get('data', {})
-                    .get('viewer', {})
-                    .get('repositoriesContributedTo', {})
+                    repo_overview_raw_results.get("data", {})
+                    .get("viewer", {})
+                    .get("repositoriesContributedTo", {})
                 )
             else:
                 owned_repos = {}
@@ -192,23 +206,23 @@ class GitHubRepoStats(object):
                 contrib_repos = {}
 
             if not self.environment_vars.is_exclude_contrib_repos:
-                repos += contrib_repos.get('nodes', [])
+                repos += contrib_repos.get("nodes", [])
 
             await self.repo_stats(repos=repos)
 
-            is_cur_owned: bool = owned_repos.get('pageInfo', {}).get(
-                'hasNextPage', False
+            is_cur_owned: bool = owned_repos.get("pageInfo", {}).get(
+                "hasNextPage", False
             )
-            is_cur_contrib: bool = contrib_repos.get('pageInfo', {}).get(
-                'hasNextPage', False
+            is_cur_contrib: bool = contrib_repos.get("pageInfo", {}).get(
+                "hasNextPage", False
             )
 
             if is_cur_owned or is_cur_contrib:
-                next_owned = owned_repos.get('pageInfo', {}).get(
-                    'endCursor', next_owned
+                next_owned = owned_repos.get("pageInfo", {}).get(
+                    "endCursor", next_owned
                 )
-                next_contrib = contrib_repos.get('pageInfo', {}).get(
-                    'endCursor', next_contrib
+                next_contrib = contrib_repos.get("pageInfo", {}).get(
+                    "endCursor", next_contrib
                 )
             else:
                 break
@@ -223,9 +237,9 @@ class GitHubRepoStats(object):
                 self._excluded_languages.add(lang_name)
 
         # TODO: Improve languages to scale by number of contributions to specific filetypes
-        langs_total: int = sum([v.get('size', 0) for v in self._languages.values()])
+        langs_total: int = sum([v.get("size", 0) for v in self._languages.values()])
         for k, v in self._languages.items():
-            v['prop']: float = 100 * (v.get('size', 0) / langs_total)
+            v["prop"]: float = 100 * (v.get("size", 0) / langs_total)
 
     def __exclude_repo_langs(
         self,
@@ -252,20 +266,20 @@ class GitHubRepoStats(object):
             if not repo or await self.is_repo_type_excluded(repo_data=repo):
                 continue
 
-            repo_name: str = repo.get('nameWithOwner')
+            repo_name: str = repo.get("nameWithOwner")
             if await self.is_repo_name_invalid(repo_name=repo_name):
                 continue
             self._repos.add(repo_name)
 
-            self._stargazers += repo.get('stargazers').get('totalCount', 0)
-            self._forks += repo.get('forkCount', 0)
+            self._stargazers += repo.get("stargazers").get("totalCount", 0)
+            self._forks += repo.get("forkCount", 0)
 
-            if repo.get('isEmpty'):
+            if repo.get("isEmpty"):
                 self._empty_repos.add(repo_name)
                 continue
 
-            for lang in repo.get('languages', {}).get('edges', []):
-                lang_name: str = lang.get('node', {}).get('name', 'Other')
+            for lang in repo.get("languages", {}).get("edges", []):
+                lang_name: str = lang.get("node", {}).get("name", "Other")
                 languages: dict[str, dict[str, float | str]] = await self.languages
 
                 if self.__exclude_repo_langs(
@@ -278,13 +292,13 @@ class GitHubRepoStats(object):
                     continue
 
                 if lang_name in languages:
-                    languages[lang_name]['size'] += lang.get('size', 0)
-                    languages[lang_name]['occurrences'] += 1
+                    languages[lang_name]["size"] += lang.get("size", 0)
+                    languages[lang_name]["occurrences"] += 1
                 else:
                     languages[lang_name] = {
-                        'size': lang.get('size', 0),
-                        'occurrences': 1,
-                        'color': lang.get('node', {}).get('color'),
+                        "size": lang.get("size", 0),
+                        "occurrences": 1,
+                        "color": lang.get("node", {}).get("color"),
                     }
 
     async def manually_added_repo_stats(self) -> None:
@@ -299,21 +313,21 @@ class GitHubRepoStats(object):
             self._repos.add(repo_name)
 
             repo_stats: dict[str, str | int | dict] = await self.queries.query_rest(
-                path=f'/repos/{repo_name}'
+                path=f"/repos/{repo_name}"
             )
             if await self.is_repo_type_excluded(repo_data=repo_stats):
                 continue
 
-            self._stargazers += repo_stats.get('stargazers_count', 0)
-            self._forks += repo_stats.get('forks', 0)
+            self._stargazers += repo_stats.get("stargazers_count", 0)
+            self._forks += repo_stats.get("forks", 0)
 
-            if repo_stats.get('size') == 0:
+            if repo_stats.get("size") == 0:
                 self._empty_repos.add(repo_name)
                 continue
 
-            if repo_stats.get('language'):
+            if repo_stats.get("language"):
                 langs: dict[str, int] = await self.queries.query_rest(
-                    path=f'/repos/{repo_name}/languages'
+                    path=f"/repos/{repo_name}/languages"
                 )
 
                 for lang_name, size in langs.items():
@@ -329,13 +343,13 @@ class GitHubRepoStats(object):
                         continue
 
                     if lang_name in languages:
-                        languages[lang_name]['size'] += size
-                        languages[lang_name]['occurrences'] += 1
+                        languages[lang_name]["size"] += size
+                        languages[lang_name]["occurrences"] += 1
                     else:
                         languages[lang_name] = {
-                            'size': size,
-                            'occurrences': 1,
-                            'color': lang_cols.get(lang_name).get('color'),
+                            "size": size,
+                            "occurrences": 1,
+                            "color": lang_cols.get(lang_name).get("color"),
                         }
 
     @property
@@ -401,7 +415,7 @@ class GitHubRepoStats(object):
         if self._languages is None:
             await self.get_stats()
             assert self._languages is not None
-        return {k: v.get('prop', 0) for (k, v) in self._languages.items()}
+        return {k: v.get("prop", 0) for (k, v) in self._languages.items()}
 
     @property
     async def repos(self) -> set[str]:
@@ -427,7 +441,7 @@ class GitHubRepoStats(object):
             [
                 i
                 for i in self._repos
-                if self.environment_vars.username == i.split('/')[0]
+                if self.environment_vars.username == i.split("/")[0]
             ]
         )
         return self._owned_repos
@@ -458,10 +472,10 @@ class GitHubRepoStats(object):
                     generated_query=GitHubApiQueries.contributions_all_years()
                 )
             )
-            .get('data', {})
-            .get('viewer', {})
-            .get('contributionsCollection', {})
-            .get('contributionYears', [])
+            .get("data", {})
+            .get("viewer", {})
+            .get("contributionsCollection", {})
+            .get("contributionYears", [])
         )
 
         by_year: list[dict[str, dict[str, int]]] = list(
@@ -470,14 +484,14 @@ class GitHubRepoStats(object):
                     generated_query=GitHubApiQueries.all_contributions(years=years)
                 )
             )
-            .get('data', {})
-            .get('viewer', {})
+            .get("data", {})
+            .get("viewer", {})
             .values()
         )
 
         for year in by_year:
-            self._total_contributions += year.get('contributionCalendar', {}).get(
-                'totalContributions', 0
+            self._total_contributions += year.get("contributionCalendar", {}).get(
+                "totalContributions", 0
             )
 
         return cast(typ=int, val=self._total_contributions)
@@ -494,7 +508,9 @@ class GitHubRepoStats(object):
             return self._users_lines_changed
         _, collab_repos = await self.raw_collaborators()
         slave_status_repos: set[str] = self.environment_vars.more_collab_repos
-        slave_status_repo_owners: set[str] = self.environment_vars.more_collab_repo_owners
+        slave_status_repo_owners: set[str] = (
+            self.environment_vars.more_collab_repo_owners
+        )
         exclusive_collab_repos: set[str] = (
             self.environment_vars.only_included_collab_repos
         )
@@ -523,16 +539,16 @@ class GitHubRepoStats(object):
             author_deletions: int = 0
 
             r: list[dict[str, any]] = await self.queries.query_rest(
-                path=f'/repos/{repo}/stats/contributors'
+                path=f"/repos/{repo}/stats/contributors"
             )
 
             for author_obj in r:
                 # Handle malformed response from API by skipping this repo
                 if not isinstance(author_obj, dict) or not isinstance(
-                    author_obj.get('author', {}), dict
+                    author_obj.get("author", {}), dict
                 ):
                     continue
-                author: str = author_obj.get('author', {}).get('login', '')
+                author: str = author_obj.get("author", {}).get("login", "")
                 contributor_set.add(
                     author
                 )  # for count number of total other contributors
@@ -541,14 +557,14 @@ class GitHubRepoStats(object):
                     author != self.environment_vars.username
                     and author not in self._EXCLUDED_USER_NAMES
                 ):
-                    for week in author_obj.get('weeks', []):
-                        other_authors_total_changes += week.get('a', 0)
-                        other_authors_total_changes += week.get('d', 0)
+                    for week in author_obj.get("weeks", []):
+                        other_authors_total_changes += week.get("a", 0)
+                        other_authors_total_changes += week.get("d", 0)
                         repo_contributors.add(author)
                 else:
-                    for week in author_obj.get('weeks', []):
-                        author_additions += week.get('a', 0)
-                        author_deletions += week.get('d', 0)
+                    for week in author_obj.get("weeks", []):
+                        author_additions += week.get("a", 0)
+                        author_deletions += week.get("d", 0)
             author_total_additions += author_additions
             author_total_deletions += author_deletions
 
@@ -559,13 +575,14 @@ class GitHubRepoStats(object):
             # calculate average author's contributions to each repository with at least one other collaborator
             if (
                 repo not in self.environment_vars.exclude_collab_repos
-                and repo.split('/')[0] not in self.environment_vars.exclude_collab_repo_owners
+                and repo.split("/")[0]
+                not in self.environment_vars.exclude_collab_repo_owners
                 and (
                     not (exclusive_collab_repos or exclusive_collab_repo_owners)
                     or repo in exclusive_collab_repos
-                    or repo.split('/')[0] in  exclusive_collab_repo_owners
+                    or repo.split("/")[0] in exclusive_collab_repo_owners
                     or repo in slave_status_repos
-                    or repo.split('/')[0] in slave_status_repo_owners
+                    or repo.split("/")[0] in slave_status_repo_owners
                 )
                 and (author_additions + author_deletions) > 0
                 and (
@@ -574,7 +591,7 @@ class GitHubRepoStats(object):
                     in collab_repos.union(
                         slave_status_repos
                     )  # either collaborators are ghosting or no show in repo
-                    or repo.split('/')[0] in slave_status_repo_owners
+                    or repo.split("/")[0] in slave_status_repo_owners
                 )
             ):
                 repo_total_changes: int = (
@@ -598,13 +615,13 @@ class GitHubRepoStats(object):
 
         if sum(author_contribution_percentages) > 0:
             self._avg_percent: str = (
-                f'{(sum(author_contribution_percentages) / len(repo_total_changes_arr) * 100):0.2f}%'
+                f"{(sum(author_contribution_percentages) / len(repo_total_changes_arr) * 100):0.2f}%"
             )
             self._avg_percent_weighted: str = (
-                f'{(sum(author_contribution_percentages_weighted) / len(repo_total_changes_arr) * 100):0.2f}%'
+                f"{(sum(author_contribution_percentages_weighted) / len(repo_total_changes_arr) * 100):0.2f}%"
             )
         else:
-            self._avg_percent_weighted = self._avg_percent = 'N/A'
+            self._avg_percent_weighted = self._avg_percent = "N/A"
 
         self._contributors: set[str] = contributor_set
 
@@ -656,23 +673,23 @@ class GitHubRepoStats(object):
         today_view_count: int = 0
         for repo in await self.repos:
             r: dict[str, str | list[dict[str, str]]] = await self.queries.query_rest(
-                path=f'/repos/{repo}/traffic/views'
+                path=f"/repos/{repo}/traffic/views"
             )
 
-            for view in r.get('views', []):
-                if view.get('timestamp')[:10] == today:
-                    today_view_count += view.get('count', 0)
-                elif view.get('timestamp')[:10] > last_viewed:
-                    self.environment_vars.set_views(views=view.get('count', 0))
-                    dates.add(view.get('timestamp')[:10])
+            for view in r.get("views", []):
+                if view.get("timestamp")[:10] == today:
+                    today_view_count += view.get("count", 0)
+                elif view.get("timestamp")[:10] > last_viewed:
+                    self.environment_vars.set_views(views=view.get("count", 0))
+                    dates.add(view.get("timestamp")[:10])
 
-        if last_viewed == '0000-00-00':
+        if last_viewed == "0000-00-00":
             dates.remove(last_viewed)
 
         if self.environment_vars.is_store_repo_view_count:
             self.environment_vars.set_last_viewed(new_last_viewed_date=yesterday)
 
-            if self.environment_vars.repo_first_viewed == '0000-00-00':
+            if self.environment_vars.repo_first_viewed == "0000-00-00":
                 self.environment_vars.repo_first_viewed = min(dates)
             self.environment_vars.set_first_viewed(
                 new_first_viewed_date=self.environment_vars.repo_first_viewed
@@ -704,14 +721,14 @@ class GitHubRepoStats(object):
 
         for repo in await self.repos:
             r: list[dict[str, any]] = await self.queries.query_rest(
-                path=f'/repos/{repo}/collaborators'
+                path=f"/repos/{repo}/collaborators"
             )
             collab_count: int = 0
 
             for obj in r:
                 if isinstance(obj, dict):
                     collab_count += 1
-                    self._collaborator_set.add(obj.get('login'))
+                    self._collaborator_set.add(obj.get("login"))
 
                     if collab_count > 1:
                         self._collab_repos.add(repo)
@@ -759,14 +776,14 @@ class GitHubRepoStats(object):
         if not self._is_fetch_rate_limit_exceeded:
             for repo in await self.repos:
                 end_point: str = (
-                    f'/repos/{repo}/pulls?state=all&involved={self.environment_vars.username}'
+                    f"/repos/{repo}/pulls?state=all&involved={self.environment_vars.username}"
                 )
 
                 for pr_data in await self.queries.query_rest(path=end_point):
                     try:
                         (
-                            pull_requests.add(pr_data['url'])
-                            if 'url' in pr_data.keys()
+                            pull_requests.add(pr_data["url"])
+                            if "url" in pr_data.keys()
                             else None
                         )
                     except AttributeError:
@@ -797,14 +814,14 @@ class GitHubRepoStats(object):
         if not self._is_fetch_rate_limit_exceeded:
             for repo in await self.repos:
                 end_point: str = (
-                    f'/repos/{repo}/issues?state=all&involved={self.environment_vars.username}'
+                    f"/repos/{repo}/issues?state=all&involved={self.environment_vars.username}"
                 )
 
                 for issue_data in await self.queries.query_rest(path=end_point):
                     try:
                         (
-                            issues.add(issue_data['url'])
-                            if 'url' in issue_data.keys()
+                            issues.add(issue_data["url"])
+                            if "url" in issue_data.keys()
                             else None
                         )
                     except AttributeError:

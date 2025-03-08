@@ -42,9 +42,11 @@ class EnvironmentVariables:
             "ONLY_INCLUDED_COLLAB_REPO_OWNERS"
         ),
         exclude_collab_repos: Optional[str] = getenv("EXCLUDED_COLLAB_REPOS"),
-        exclude_collab_repo_owners: Optional[str] = getenv("EXCLUDED_COLLAB_REPO_OWNERS"),
+        exclude_collab_repo_owners: Optional[str] = getenv(
+            "EXCLUDED_COLLAB_REPO_OWNERS"
+        ),
         more_collab_repos: Optional[str] = getenv("MORE_COLLAB_REPOS"),
-        more_collab_repo_owners: Optional[str] = getenv("MORE_COLLAB_REPO_OWNERS")
+        more_collab_repo_owners: Optional[str] = getenv("MORE_COLLAB_REPO_OWNERS"),
     ) -> None:
         self.__db: GitRepoStatsDB = GitRepoStatsDB()
 
@@ -180,7 +182,10 @@ class EnvironmentVariables:
                 x.strip() for x in only_included_collab_repos.split(",")
             }
 
-        if only_included_collab_repo_owners is None or only_included_collab_repo_owners == "":
+        if (
+            only_included_collab_repo_owners is None
+            or only_included_collab_repo_owners == ""
+        ):
             self.only_included_collab_repo_owners: set[str] = set()
         else:
             self.only_included_collab_repo_owners = {
@@ -209,7 +214,9 @@ class EnvironmentVariables:
         if more_collab_repo_owners is None:
             self.more_collab_repo_owners: set[str] = set()
         else:
-            self.more_collab_repo_owners = {x.strip() for x in more_collab_repo_owners.split(",")}
+            self.more_collab_repo_owners = {
+                x.strip() for x in more_collab_repo_owners.split(",")
+            }
 
         self.pull_requests_count: int = self.__db.pull_requests
         self.issues_count: int = self.__db.issues
