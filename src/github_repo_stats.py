@@ -108,7 +108,8 @@ class GitHubRepoStats(object):
             or (
                 len(self.environment_vars.only_included_repos) > 0
                 and repo_name not in self.environment_vars.only_included_repos
-                and repo_name.split("/")[0] not in self.environment_vars.only_included_owners
+                and repo_name.split("/")[0]
+                not in self.environment_vars.only_included_owners
             )
             or repo_name in self.environment_vars.exclude_repos
             or repo_name.split("/")[0] in self.environment_vars.exclude_owners
