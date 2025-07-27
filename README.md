@@ -8,8 +8,6 @@ Generate regularly updated visualizations of personalized GitHub statistics. Fil
 
 [![GitStats Overview](https://raw.githubusercontent.com/R055A/GitStats/refs/heads/actions_branch/generated_images/overview.svg)![GitStats Languages](https://raw.githubusercontent.com/R055A/GitStats/refs/heads/actions_branch/generated_images/languages.svg)](https://github.com/R055A/GitStats)
 
-> _My **Avg contributions** mostly include [uni projects](https://github.com/University-Project-Repos), and exclude non-collab, minor roles (open-source, lead), etc_  
-
 ## Description of Statistical Terminology
 
 | GitHub Statistics Term         | Description                                                                                                    |
