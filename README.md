@@ -3,18 +3,23 @@
 ![](https://raw.githubusercontent.com/profile-icons/github-stats-modified/refs/heads/generated/overview.svg)
 ![](https://raw.githubusercontent.com/profile-icons/github-stats-modified/refs/heads/generated/languages.svg)
 
-Generate visualizations of GitHub user and repository statistics with GitHub
-Actions. Visualizations can include data from private repositories, and from
-repositories you have contributed to, but do not own.
+Generate visualizations of GitHub user and repository statistics with GitHub   
+Actions. Visualizations can also include data from private repositories, and   
+from repositories you have contributed to, but don't own. Contributions welcome!  
 
-> A modification of [jstrieb/github-stats](https://github.com/jstrieb/github-stats):
+> Modification of [jstrieb/github-stats](https://github.com/jstrieb/github-stats):
 
 * optionally visualize language stats by line changes
    * backup: line changes weighted by repo language byte share estimation
-* support portable dark-mode and [i18n](https://github.com/profile-icons/github-stats-modified/issues/1)
+* support portable dark-mode (also external to GitHub `README.md`) and [i18n](https://github.com/profile-icons/github-stats-modified/issues/1)
 * widen `languages.svg` to use excess `README.md` space and list more language stats
-* display all traffic (views + clones) stats
+* display all traffic (views + clones) stats; to better represent automation and bots
 * update once weekly
+* Removed from past two modifications (before the port from Python to Zip):
+  * average user contribution stats across included repositories
+    * this was for personal reasons and initially removed '21 following instant ironic plagiarism
+    * refer to [profile-icons/readme-repo-pins](https://github.com/profile-icons/readme-repo-pins) for alternative (optional) user contribution stats per repository
+      * an [example is found here](https://github.com/uni-git-projects)
 
 ## Background
 
@@ -247,7 +252,9 @@ instead make a generous donation to one of the following organizations.
 - [The Internet Archive](https://archive.org/donate/index.php)
 
 
-## Project Status
+## Project Status - CONTRIBUTIONS WELCOME!
+
+> Below is the status of the project being modified, not this repository. 
 
 This project is actively maintained, but not actively developed. In other
 words, I will fix bugs, but will rarely add features (if at all). If there are
