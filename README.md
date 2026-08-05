@@ -20,6 +20,13 @@ from repositories you have contributed to, but don't own. Contributions welcome!
     * this was for personal reasons and initially removed '21 following instant ironic plagiarism
     * refer to [profile-icons/readme-repo-pins](https://github.com/profile-icons/readme-repo-pins) for alternative (optional) user contribution stats per repository
       * an [example is found here](https://github.com/uni-git-projects)
+  * repository views count tracked from initial API-fetch, not current past two weeks
+  * user Issues and PR stats
+  * representation of how many repositories contributed to are owned by the user
+  * modifications which `jstrieb/github-stats` now supports:
+    * specifying dark/light-mode theme for GitHub Markdown
+      * this modification uses portable CSS dark/light-mode not restricted to GitHub markdown
+    * dynamically creating and updating a separate branch from `main` for generated images to
 
 ## Background
 
