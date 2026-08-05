@@ -1,6 +1,7 @@
 // modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26.
 const std = @import("std");
 const git = @import("git.zig");
+const glob = @import("glob.zig");
 const HttpClient = @import("http_client.zig");
 
 repositories: []Repository,
@@ -18,6 +19,10 @@ const Statistics = @This();
 pub const InitParams = struct {
     max_retries: ?usize = null,
     use_api_line_stats: bool = true,
+    include_repos: []const []const u8 = &.{},
+    exclude_repos: []const []const u8 = &.{},
+    exclude_private: bool = false,
+    exclude_fork: bool = true,
 };
 
 const Repository = struct {
@@ -29,7 +34,8 @@ const Repository = struct {
     views: u32,
     clones: u32,
     traffic: u32,
-    private: bool,
+    is_private: bool,
+    is_fork: bool = false,
 
     pub fn deinit(self: @This(), allocator: std.mem.Allocator) void {
         allocator.free(self.name);
@@ -63,7 +69,7 @@ const Repository = struct {
             self.lines_changed = 0;
             const authors = std.json.parseFromSliceLeaky(
                 []struct {
-                    author: struct { login: []const u8 },
+                    author: ?struct { login: []const u8 },
                     weeks: []struct {
                         a: u32,
                         d: u32,
@@ -72,25 +78,28 @@ const Repository = struct {
                 arena.allocator(),
                 response.body,
                 .{ .ignore_unknown_fields = true },
-            ) catch {
+            ) catch |e| {
                 // TODO: Replace with proper exception propagation when GitHub
                 // gets their shit together and stops breaking this endpoint
-                std.log.info(
-                    "Skipping lines changed by {s} in {s} due to invalid " ++
-                        "response from GitHub.",
-                    .{ user, self.name },
+                std.log.warn(
+                    "Invalid contribution stats response for {s} in {s}: {any}",
+                    .{ self.name, user, e },
                 );
-                return response.status;
+                return e;
             };
+
+            var lines_changed: u64 = 0;
             for (authors) |o| {
-                if (!std.mem.eql(u8, o.author.login, user)) {
+                const author = o.author orelse continue;
+                if (!std.ascii.eqlIgnoreCase(author.login, user)) {
                     continue;
                 }
                 for (o.weeks) |week| {
-                    self.lines_changed += week.a;
-                    self.lines_changed += week.d;
+                    lines_changed += week.a;
+                    lines_changed += week.d;
                 }
             }
+            self.lines_changed = saturatingCastU32(lines_changed);
         }
         return response.status;
     }
@@ -196,6 +205,10 @@ const Repository = struct {
             allocator.free(git_languages);
         }
 
+        if (git_languages.len == 0) {
+            return error.NoMatchingCommitStats;
+        }
+
         var languages: std.ArrayList(Language) = .empty;
         errdefer {
             for (languages.items) |language| {
@@ -209,13 +222,9 @@ const Repository = struct {
             total_lines_changed += src.lines_changed;
 
             const repo_language_size = self.repoLanguageByteShareSize(src.name);
-            if (repo_language_size == 0) {
-                continue;
-            }
-
             var language = Language{
                 .name = try allocator.dupe(u8, src.name),
-                .size = repo_language_size,
+                .size = if (repo_language_size == 0) 1 else repo_language_size,
                 .additions = src.additions,
                 .deletions = src.deletions,
                 .lines_changed = src.lines_changed,
@@ -252,12 +261,57 @@ fn getLanguageStatsByRepo(self: *Statistics) void {
     }
 }
 
+fn getRepoLineStatsFromApi(
+    self: *Statistics,
+    repository: *Repository,
+    arena: *std.heap.ArenaAllocator,
+    io: std.Io,
+    client: *HttpClient,
+    max_retries: ?usize,
+) !void {
+    const retry_limit = max_retries orelse 25;
+    var attempt: usize = 0;
+
+    while (true) {
+        const status = repository.getLinesChanged(arena, client, self.user) catch |e| {
+            if (attempt >= retry_limit) return e;
+            attempt += 1;
+            const delay: i64 = @intCast(@min(attempt, 5));
+            std.log.warn(
+                "API lines-changed req for {s} failed; retry {d}/{d} in {d}s ({any})",
+                .{ repository.name, attempt, retry_limit, delay, e },
+            );
+            try io.sleep(.fromSeconds(delay), .real);
+            continue;
+        };
+
+        switch (status) {
+            .ok => {
+                repository.getLanguageStatsByLineChange();
+                return;
+            },
+            .accepted, .forbidden, .too_many_requests => {
+                if (attempt >= retry_limit) return error.TooManyRetries;
+                attempt += 1;
+                const delay: i64 = @intCast(@min(attempt, 5));
+                std.log.warn(
+                    "API line stats for {s} returned {?s}; retry {d}/{d} in {d}s",
+                    .{ repository.name, status.phrase(), attempt, retry_limit, delay },
+                );
+                try io.sleep(.fromSeconds(delay), .real);
+            },
+            else => return error.RequestFailed,
+        }
+    }
+}
+
 fn getUserStatsFromCommitLogs(
     self: *Statistics,
     allocator: std.mem.Allocator,
+    arena: *std.heap.ArenaAllocator,
     io: std.Io,
     client: *HttpClient,
-    strict: bool,
+    max_retries: ?usize,
 ) !void {
     const response = try client.rest(git.gh_languages_url);
     defer client.allocator.free(response.body);
@@ -282,12 +336,18 @@ fn getUserStatsFromCommitLogs(
             self.emails,
             &repo_languages,
         ) catch |e| {
-            if (strict) return e;
-            std.log.info(
-                "Falling back to API-estimated language line changes ({any})",
-                .{e},
+            std.log.warn(
+                "Commit scrape failed for {s}; fallback to API: ({any})",
+                .{ repository.name, e },
             );
-            repository.getLanguageStatsByLineChange();
+            self.getRepoLineStatsFromApi(repository, arena, io, client, max_retries) catch |api_err| {
+                std.log.err(
+                    "Line stats API-fetch fail for {s}; omitting from languages ({any})",
+                    .{ repository.name, api_err },
+                );
+                repository.lines_changed = 0;
+                repository.getLanguageStatsByLineChange();
+            };
         };
     }
 }
@@ -358,7 +418,7 @@ pub fn initWithOptionalParams(
     var arena = std.heap.ArenaAllocator.init(allocator);
     defer arena.deinit();
 
-    var self: Statistics = try getRepos(allocator, &arena, client);
+    var self: Statistics = try getRepos(allocator, &arena, client, params);
     errdefer self.deinit(allocator);
 
     try self.getLineStats(
@@ -384,16 +444,16 @@ fn getLineStats(
 ) !void {
     if (use_api_line_stats) {
         self.getLineStatsFromApi(arena, io, client, max_retries) catch |api_err| {
-            std.log.info(
-                "API line stats failed; falling back to commit logs ({any})",
+            std.log.warn(
+                "API-fetch line stats failed; falling back to commit logs ({any})",
                 .{api_err},
             );
-            try self.getLineStatsFromCommitLogs(allocator, io, client);
+            try self.getLineStatsFromCommitLogs(allocator, arena, io, client, max_retries);
         };
     } else {
-        self.getLineStatsFromCommitLogs(allocator, io, client) catch |git_err| {
-            std.log.info(
-                "Commit-log line stats failed; falling back to API ({any})",
+        self.getLineStatsFromCommitLogs(allocator, arena, io, client, max_retries) catch |git_err| {
+            std.log.warn(
+                "Commit-scrape line stats failed; falling back to API ({any})",
                 .{git_err},
             );
             try self.getLineStatsFromApi(arena, io, client, max_retries);
@@ -415,10 +475,12 @@ fn getLineStatsFromApi(
 fn getLineStatsFromCommitLogs(
     self: *Statistics,
     allocator: std.mem.Allocator,
+    arena: *std.heap.ArenaAllocator,
     io: std.Io,
     client: *HttpClient,
+    max_retries: ?usize,
 ) !void {
-    try self.getUserStatsFromCommitLogs(allocator, io, client, true);
+    try self.getUserStatsFromCommitLogs(allocator, arena, io, client, max_retries);
 }
 
 pub fn initFromJson(allocator: std.mem.Allocator, s: []const u8) !Statistics {
@@ -577,6 +639,10 @@ fn getReposByYear(
         result: *Statistics,
         seen: *std.StringHashMap(bool),
         repositories: *std.ArrayList(Repository),
+        include_repos: []const []const u8,
+        exclude_repos: []const []const u8,
+        exclude_private: bool,
+        exclude_fork: bool,
     },
     year: usize,
     start_month: usize,
@@ -601,6 +667,7 @@ fn getReposByYear(
         \\          stargazerCount
         \\          forkCount
         \\          isPrivate
+        \\          isFork
         \\          viewerPermission
         \\          languages(
         \\              first: 100,
@@ -658,6 +725,7 @@ fn getReposByYear(
                         stargazerCount: u32,
                         forkCount: u32,
                         isPrivate: bool,
+                        isFork: bool,
                         viewerPermission: []const u8,
                         languages: ?struct {
                             edges: ?[]struct {
@@ -725,11 +793,30 @@ fn getReposByYear(
             );
             continue;
         }
+        try context.seen.put(raw_repo.nameWithOwner, true);
+
+        if (!isIncludeRepo(
+            context.include_repos,
+            context.exclude_repos,
+            context.exclude_private,
+            context.exclude_fork,
+            raw_repo.nameWithOwner,
+            raw_repo.isPrivate,
+            raw_repo.isFork,
+        )) {
+            std.log.debug(
+                "Skipping {s} (repository filter)",
+                .{raw_repo.nameWithOwner},
+            );
+            continue;
+        }
+
         var repository = Repository{
             .name = try context.allocator.dupe(u8, raw_repo.nameWithOwner),
             .stars = raw_repo.stargazerCount,
             .forks = raw_repo.forkCount,
-            .private = raw_repo.isPrivate,
+            .is_private = raw_repo.isPrivate,
+            .is_fork = raw_repo.isFork,
             .languages = null,
             .views = 0,
             .clones = 0,
@@ -840,7 +927,6 @@ fn getReposByYear(
 
         repository.traffic = repository.views + repository.clones;
 
-        try context.seen.put(raw_repo.nameWithOwner, true);
         try context.repositories.append(context.allocator, repository);
     }
 }
@@ -849,6 +935,7 @@ fn getRepos(
     allocator: std.mem.Allocator,
     arena: *std.heap.ArenaAllocator,
     client: *HttpClient,
+    params: InitParams,
 ) !Statistics {
     var result: Statistics = .{
         .user = undefined,
@@ -904,6 +991,10 @@ fn getRepos(
             .result = &result,
             .seen = &seen,
             .repositories = &repositories,
+            .include_repos = params.include_repos,
+            .exclude_repos = params.exclude_repos,
+            .exclude_private = params.exclude_private,
+            .exclude_fork = params.exclude_fork,
         }, year, 0, 12);
     }
 
@@ -924,6 +1015,21 @@ fn getRepos(
     }.lessThanFn);
 
     return result;
+}
+
+fn isIncludeRepo(
+    include_repos: []const []const u8,
+    exclude_repos: []const []const u8,
+    exclude_private: bool,
+    exclude_fork: bool,
+    name: []const u8,
+    is_private: bool,
+    is_fork: bool,
+) bool {
+    if (exclude_private and is_private) return false;
+    if (exclude_fork and is_fork) return false;
+    if (include_repos.len > 0) return glob.matchAny(include_repos, name);
+    return !glob.matchAny(exclude_repos, name);
 }
 
 fn getLinesChanged(
@@ -980,7 +1086,7 @@ fn getLinesChanged(
                 // Note: this actually works way better with a very short delay,
                 // hence no exponential backoff
                 const random: std.Random.IoSource = .{ .io = io };
-                item.delay = random.interface().intRangeAtMost(i64, 0, 4);
+                item.delay = random.interface().intRangeAtMost(i64, 1, 5);
                 item.retries += 1;
                 if (max_retries) |max| {
                     if (item.retries <= max) {

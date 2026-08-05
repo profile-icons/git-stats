@@ -47,7 +47,7 @@ const I18n = struct {
     repos_with_contributions_str: []const u8,
     programming_languages_str: []const u8,
     by_line_changes_str: []const u8,
-    estimated_str: []const u8,
+    by_file_size_str: []const u8,
 };
 
 const Args = struct {
@@ -57,9 +57,11 @@ const Args = struct {
     silent: bool = false,
     debug: bool = false,
     verbose: bool = false,
+    include_repos: ?[]const u8 = null,
     exclude_repos: ?[]const u8 = null,
     exclude_langs: ?[]const u8 = null,
     exclude_private: bool = false,
+    exclude_fork: bool = true,
     overview_output_file: ?[]const u8 = null,
     languages_output_file: ?[]const u8 = null,
     overview_template: ?[]const u8 = null,
@@ -150,7 +152,7 @@ fn i18nFromJson(obj: std.json.ObjectMap) !I18n {
         .repos_with_contributions_str = try jsonString(obj, "repos_with_contributions_str"),
         .programming_languages_str = try jsonString(obj, "programming_languages_str"),
         .by_line_changes_str = try jsonString(obj, "by_line_changes_str"),
-        .estimated_str = try jsonString(obj, "estimated_str"),
+        .by_file_size_str = try jsonString(obj, "by_file_size_str"),
     };
 }
 
@@ -189,7 +191,7 @@ fn i18nSvgLanguagesBlock(
         if (stats.is_local)
             i18n.by_line_changes_str
         else
-            i18n.estimated_str;
+            i18n.by_file_size_str;
 
     return try std.fmt.allocPrint(allocator,
         \\<foreignObject{s} x="21" y="17" width="406.3" height="176">
@@ -466,6 +468,21 @@ fn languages(
     );
 }
 
+fn isIncludeRepo(
+    include_repos: []const []const u8,
+    exclude_repos: []const []const u8,
+    exclude_private: bool,
+    exclude_fork: bool,
+    name: []const u8,
+    is_private: bool,
+    is_fork: bool,
+) bool {
+    if (exclude_private and is_private) return false;
+    if (exclude_fork and is_fork) return false;
+    if (include_repos.len > 0) return glob.matchAny(include_repos, name);
+    return !glob.matchAny(exclude_repos, name);
+}
+
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
     const io = init.io;
@@ -473,7 +490,7 @@ pub fn main(init: std.process.Init) !void {
     const args = try Args.init(init);
     defer args.deinit(allocator);
     if (args.silent) {
-        log_level = .err;
+        log_level = .warn;
     } else if (args.debug) {
         log_level = .debug;
     } else if (args.verbose) {
@@ -502,6 +519,12 @@ pub fn main(init: std.process.Init) !void {
         return;
     }
 
+    const include_repos =
+        if (args.include_repos) |include|
+            try splitList(allocator, include, " ,\t\r\n|\"'\x00")
+        else
+            null;
+    defer if (include_repos) |include| allocator.free(include);
     const exclude_repos =
         if (args.exclude_repos) |exclude|
             try splitList(allocator, exclude, " ,\t\r\n|\"'\x00")
@@ -533,6 +556,10 @@ pub fn main(init: std.process.Init) !void {
             .{
                 .max_retries = args.max_retries,
                 .use_api_line_stats = !args.is_local,
+                .include_repos = include_repos orelse &.{},
+                .exclude_repos = exclude_repos orelse &.{},
+                .exclude_private = args.exclude_private,
+                .exclude_fork = args.exclude_fork,
             },
         );
     } else unreachable;
@@ -587,9 +614,15 @@ pub fn main(init: std.process.Init) !void {
     defer aggregate_stats.language_colors.deinit(allocator);
 
     for (stats.repositories) |repository| {
-        if (glob.matchAny(exclude_repos orelse &.{}, repository.name) or
-            (args.exclude_private and repository.private))
-        {
+        if (!isIncludeRepo(
+            include_repos orelse &.{},
+            exclude_repos orelse &.{},
+            args.exclude_private,
+            args.exclude_fork,
+            repository.name,
+            repository.is_private,
+            repository.is_fork,
+        )) {
             continue;
         }
         aggregate_stats.stars += repository.stars;

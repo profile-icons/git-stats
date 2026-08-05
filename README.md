@@ -10,23 +10,25 @@ from repositories you have contributed to, but don't own. Contributions welcome!
 > Modification of [jstrieb/github-stats](https://github.com/jstrieb/github-stats):
 
 * optionally visualize language stats by line changes
-   * backup: line changes weighted by repo language byte share estimation
+  * backup: estimated line changes weighted by repo language byte share
 * support portable dark-mode (also external to GitHub `README.md`) and [i18n](https://github.com/profile-icons/github-stats-modified/issues/1)
 * widen `languages.svg` to use excess `README.md` space and list more language stats
 * display all traffic (views + clones) stats; to better represent automation and bots
+* include only an exclusive list of repositories for statistics and skip all others
+* exclude forked repositories - editable in the `main.yml` workflow; `true` by default
 * update once weekly
 * Removed from past two modifications (before the port from Python to Zip):
   * average user contribution stats across included repositories
     * this was for personal reasons and initially removed '21 following instant ironic plagiarism
     * refer to [profile-icons/readme-repo-pins](https://github.com/profile-icons/readme-repo-pins) for alternative (optional) user contribution stats per repository
       * an [example is found here](https://github.com/uni-git-projects)
-  * repository views count tracked from initial API-fetch, not current past two weeks
+  * repository view count tracked from initial API-fetch, not current past two weeks
   * user Issues and PR stats
   * representation of how many repositories contributed to are owned by the user
   * modifications which `jstrieb/github-stats` now supports:
     * specifying dark/light-mode theme for GitHub Markdown
       * this modification uses portable CSS dark/light-mode not restricted to GitHub markdown
-    * dynamically creating and updating a separate branch from `main` for generated images to
+    * workflow: create/update a separate branch from `main` for generated images
 
 ## Background
 
@@ -140,6 +142,8 @@ and retrieve the images.
    1. Paste your personal access token from step 1 into the large "Secret" text
       box.
 1. (Optional) Make other secrets for more configuration.
+   - To only include repositories in the aggregate statistics, add them
+     (separated by commas) to a secret called `INCLUDE_REPOS`.
    - To exclude some repositories from the aggregate statistics, add them
      (separated by commas) to a secret called `EXCLUDE_REPOS`.
      - To prevent your copy of this repository from showing up in your
@@ -151,7 +155,8 @@ and retrieve the images.
        the CLI](#list-languages), or in the [list used by GitHub
        linguist](https://github.com/github-linguist/linguist/blob/537297cdae3ab05f8d5dd1c03627a5bd73707b19/lib/linguist/languages.yml)
        (which powers their language analysis on the back end).
-   - To aggregate language statistics based directly on line changes from commit logs, add `true` to a secret called `IS_LOCAL`.
+   - To aggregate language statistics based directly on line changes from commit logs, 
+     add `true` to a secret called `IS_LOCAL`.
    - Lists for `EXCLUDE_REPOS` and `EXCLUDE_LANGS` can use globbing patterns.
      For example, to exclude all repos by user "jstrieb", add `jstrieb/*` to
      `EXCLUDE_REPOS`.

@@ -24,11 +24,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - uses: mlugg/setup-zig@v2
       with:
         version: 0.16.0
+
+    - name: Check
+      run: |
+        zig fmt --check .
 
     - name: Build
       run: |
@@ -36,8 +40,8 @@ jobs:
 
     - name: Checkout history branch
       run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
+        git config --global user.name "r055a/github-stats-modified"
+        git config --global user.email "github-stats[bot]@r055a.github.io"
         # Push generated files to the generated branch
         git pull
         git checkout generated || git checkout -b generated
@@ -47,10 +51,12 @@ jobs:
         ./zig-out/bin/github-stats
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        INCLUDE_REPOS: ${{ secrets.INCLUDE_REPOS }}
         EXCLUDE_REPOS: ${{ secrets.EXCLUDE_REPOS }}
         EXCLUDE_LANGS: ${{ secrets.EXCLUDE_LANGS }}
         IS_LOCAL: ${{ secrets.IS_LOCAL }}
         EXCLUDE_PRIVATE: "false"
+        EXCLUDE_FORK: "true"
         SILENT: "true"
         # TODO: Remove this when they get their API working again
         # https://github.com/orgs/community/discussions/192970
