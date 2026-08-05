@@ -3,6 +3,7 @@ const std = @import("std");
 const git = @import("git.zig");
 const glob = @import("glob.zig");
 const HttpClient = @import("http_client.zig");
+const Statistics = @This();
 
 repositories: []Repository,
 user: []const u8,
@@ -14,13 +15,17 @@ commit_contributions: u32 = 0,
 pr_contributions: u32 = 0,
 review_contributions: u32 = 0,
 
-const Statistics = @This();
+pub const LangType = git.LangType;
 
 pub const InitParams = struct {
     max_retries: ?usize = null,
     use_api_line_stats: bool = true,
     include_repos: []const []const u8 = &.{},
     exclude_repos: []const []const u8 = &.{},
+    exclude_langs_type_data: bool = true,
+    exclude_langs_type_prose: bool = true,
+    exclude_langs_type_markup: bool = false,
+    exclude_langs_type_programming: bool = false,
     exclude_private: bool = false,
     exclude_fork: bool = true,
 };
@@ -44,6 +49,19 @@ const Repository = struct {
                 language.deinit(allocator);
             }
             allocator.free(languages);
+        }
+    }
+
+    fn applyLanguageMetadata(
+        self: *@This(),
+        repo_langs: *const git.GitHubRepoLanguages,
+    ) void {
+        if (self.languages) |languages| {
+            for (languages) |*language| {
+                if (repo_langs.findByName(language.name)) |definition| {
+                    language.lang_type = definition.lang_type;
+                }
+            }
         }
     }
 
@@ -217,6 +235,10 @@ const Repository = struct {
             languages.deinit(allocator);
         }
 
+        // for (self.repositories) |*repository| {
+        //     repository.applyLanguageMetadata(&repo_languages);
+        // }
+
         var total_lines_changed: u64 = 0;
         for (git_languages) |src| {
             total_lines_changed += src.lines_changed;
@@ -224,6 +246,7 @@ const Repository = struct {
             const repo_language_size = self.repoLanguageByteShareSize(src.name);
             var language = Language{
                 .name = try allocator.dupe(u8, src.name),
+                .lang_type = src.lang_type,
                 .size = if (repo_language_size == 0) 1 else repo_language_size,
                 .additions = src.additions,
                 .deletions = src.deletions,
@@ -328,6 +351,10 @@ fn getUserStatsFromCommitLogs(
     defer repo_languages.deinit(allocator);
 
     for (self.repositories) |*repository| {
+        repository.applyLanguageMetadata(&repo_languages);
+    }
+
+    for (self.repositories) |*repository| {
         repository.getUserStatsFromCommitLogs(
             allocator,
             io,
@@ -377,6 +404,7 @@ fn getFileExtensions(
 
 const Language = struct {
     name: []const u8,
+    lang_type: LangType = .unknown,
     size: u32,
     additions: u32 = 0,
     deletions: u32 = 0,
@@ -386,11 +414,15 @@ const Language = struct {
 
     pub fn deinit(self: @This(), allocator: std.mem.Allocator) void {
         allocator.free(self.name);
-        if (self.color) |color| allocator.free(color);
+
+        if (self.color) |color| {
+            allocator.free(color);
+        }
 
         for (self.extensions) |extension| {
             allocator.free(extension);
         }
+
         if (self.extensions.len > 0) {
             allocator.free(self.extensions);
         }
@@ -461,6 +493,29 @@ fn getLineStats(
     }
 }
 
+fn applyLangMetadataFromApi(
+    self: *Statistics,
+    allocator: std.mem.Allocator,
+    client: *HttpClient,
+) !void {
+    const res = try client.rest(git.gh_languages_url);
+    defer client.allocator.free(res.body);
+    if (res.status != .ok) {
+        std.log.info(
+            "Fetch language metadata fail ({?s})",
+            .{res.status.phrase()},
+        );
+        return error.RequestFailed;
+    }
+
+    const repo_langs =
+        try git.GitHubRepoLanguages.init(allocator, res.body);
+    defer repo_langs.deinit(allocator);
+    for (self.repositories) |*repository| {
+        repository.applyLanguageMetadata(&repo_langs);
+    }
+}
+
 fn getLineStatsFromApi(
     self: *Statistics,
     arena: *std.heap.ArenaAllocator,
@@ -468,7 +523,16 @@ fn getLineStatsFromApi(
     client: *HttpClient,
     max_retries: ?usize,
 ) !void {
-    try self.getLinesChanged(arena, io, client, max_retries);
+    try self.applyLangMetadataFromApi(
+        arena.allocator(),
+        client,
+    );
+    try self.getLinesChanged(
+        arena,
+        io,
+        client,
+        max_retries,
+    );
     self.getLanguageStatsByRepo();
 }
 
@@ -846,6 +910,7 @@ fn getReposByYear(
                     }
                     language.* = .{
                         .name = try context.allocator.dupe(u8, raw.node.name),
+                        .lang_type = .unknown,
                         .size = raw.size,
                         .additions = 0,
                         .deletions = 0,

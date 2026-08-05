@@ -60,6 +60,10 @@ const Args = struct {
     include_repos: ?[]const u8 = null,
     exclude_repos: ?[]const u8 = null,
     exclude_langs: ?[]const u8 = null,
+    exclude_langs_type_data: bool = true,
+    exclude_langs_type_prose: bool = true,
+    exclude_langs_type_markup: bool = false,
+    exclude_langs_type_programming: bool = false,
     exclude_private: bool = false,
     exclude_fork: bool = true,
     overview_output_file: ?[]const u8 = null,
@@ -197,7 +201,7 @@ fn i18nSvgLanguagesBlock(
         \\<foreignObject{s} x="21" y="17" width="406.3" height="176">
         \\<div xmlns="http://www.w3.org/1999/xhtml" class="ellipsis">
         \\
-        \\<h2>{d} {s} ({s})</h2>
+        \\<h2>{d} [+{d}] {s} ({s})</h2>
         \\
         \\<div>
         \\<span class="progress">
@@ -217,6 +221,7 @@ fn i18nSvgLanguagesBlock(
     , .{
         system_language_attr,
         stats.languages.count(),
+        stats.excluded_langs.count(),
         i18n.programming_languages_str,
         languages_by_str,
         progress,
@@ -468,6 +473,19 @@ fn languages(
     );
 }
 
+fn isExcludeLangType(
+    lang_type: Statistics.LangType,
+    args: *const Args,
+) bool {
+    return switch (lang_type) {
+        .data => args.exclude_langs_type_data,
+        .prose => args.exclude_langs_type_prose,
+        .markup => args.exclude_langs_type_markup,
+        .programming => args.exclude_langs_type_programming,
+        .unknown => true,
+    };
+}
+
 fn isIncludeRepo(
     include_repos: []const []const u8,
     exclude_repos: []const []const u8,
@@ -590,6 +608,7 @@ pub fn main(init: std.process.Init) !void {
     var aggregate_stats: struct {
         languages: std.array_hash_map.String(u64),
         language_colors: std.array_hash_map.String([]const u8),
+        excluded_langs: std.array_hash_map.String(bool),
         is_local: bool,
         contributions: usize,
         name: []const u8,
@@ -608,10 +627,12 @@ pub fn main(init: std.process.Init) !void {
             stats.review_contributions,
         .languages = try .init(allocator, &.{}, &.{}),
         .language_colors = try .init(allocator, &.{}, &.{}),
+        .excluded_langs = try .init(allocator, &.{}, &.{}),
         .name = stats.name,
     };
     defer aggregate_stats.languages.deinit(allocator);
     defer aggregate_stats.language_colors.deinit(allocator);
+    defer aggregate_stats.excluded_langs.deinit(allocator);
 
     for (stats.repositories) |repository| {
         if (!isIncludeRepo(
@@ -631,12 +652,21 @@ pub fn main(init: std.process.Init) !void {
         aggregate_stats.traffic += repository.traffic;
         aggregate_stats.repos += 1;
         if (repository.languages) |langs| for (langs) |language| {
-            if (glob.matchAny(exclude_langs orelse &.{}, language.name)) {
+            const lang_lines_changed = @as(u64, language.lines_changed);
+            if (lang_lines_changed == 0) {
                 continue;
             }
 
-            const lang_lines_changed = @as(u64, language.lines_changed);
-            if (lang_lines_changed == 0) {
+            const is_exclude_lang_name =
+                glob.matchAny(exclude_langs orelse &.{}, language.name);
+            const is_exclude_lang_type =
+                isExcludeLangType(language.lang_type, &args);
+            if (is_exclude_lang_name or is_exclude_lang_type) {
+                try aggregate_stats.excluded_langs.put(
+                    allocator,
+                    language.name,
+                    true,
+                );
                 continue;
             }
 

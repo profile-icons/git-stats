@@ -16,6 +16,7 @@ from repositories you have contributed to, but don't own. Contributions welcome!
 * display all traffic (views + clones) stats; to better represent automation and bots
 * include only an exclusive list of repositories for statistics and skip all others
 * exclude forked repositories - editable in the `main.yml` workflow; `true` by default
+* exclude language type: data (default: `true`), prose (`true`), markup (`false`), programming (`false`)
 * update once weekly
 * Removed from past two modifications (before the port from Python to Zip):
   * average user contribution stats across included repositories

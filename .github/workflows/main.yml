@@ -57,6 +57,10 @@ jobs:
         IS_LOCAL: ${{ secrets.IS_LOCAL }}
         EXCLUDE_PRIVATE: "false"
         EXCLUDE_FORK: "true"
+        EXCLUDE_LANGS_TYPE_DATA: "true"
+        EXCLUDE_LANGS_TYPE_PROSE: "true"
+        EXCLUDE_LANGS_TYPE_MARKUP: "false"
+        EXCLUDE_LANGS_TYPE_PROGRAMMING: "false"
         SILENT: "true"
         # TODO: Remove this when they get their API working again
         # https://github.com/orgs/community/discussions/192970

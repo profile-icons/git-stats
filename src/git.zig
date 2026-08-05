@@ -5,6 +5,14 @@ var is_installed: ?bool = null;
 
 pub const gh_languages_url = "https://raw.githubusercontent.com/github-linguist/linguist/master/lib/linguist/languages.yml";
 
+pub const LangType = enum {
+    programming,
+    markup,
+    data,
+    prose,
+    unknown,
+};
+
 pub fn isInstalled(gpa: std.mem.Allocator, io: std.Io) bool {
     if (is_installed) |v| {
         return v;
@@ -36,6 +44,7 @@ pub fn currentCommit(gpa: std.mem.Allocator, io: std.Io) ![]const u8 {
 
 pub const LanguageDefinition = struct {
     name: []const u8,
+    lang_type: LangType = .unknown,
     color: ?[]const u8 = null,
     extensions: [][]const u8 = &.{},
     filenames: [][]const u8 = &.{},
@@ -43,12 +52,14 @@ pub const LanguageDefinition = struct {
     pub fn deinit(self: @This(), gpa: std.mem.Allocator) void {
         gpa.free(self.name);
         if (self.color) |color| gpa.free(color);
+
         for (self.extensions) |extension| {
             gpa.free(extension);
         }
         if (self.extensions.len > 0) {
             gpa.free(self.extensions);
         }
+
         for (self.filenames) |filename| {
             gpa.free(filename);
         }
@@ -60,6 +71,7 @@ pub const LanguageDefinition = struct {
 
 const BuildLanguage = struct {
     name: []const u8,
+    lang_type: LangType = .unknown,
     color: ?[]const u8 = null,
     extensions: std.ArrayList([]const u8) = .empty,
     filenames: std.ArrayList([]const u8) = .empty,
@@ -68,11 +80,14 @@ const BuildLanguage = struct {
         if (self.name.len > 0) {
             gpa.free(self.name);
         }
+
         if (self.color) |color| gpa.free(color);
+
         for (self.extensions.items) |extension| {
             gpa.free(extension);
         }
         self.extensions.deinit(gpa);
+
         for (self.filenames.items) |filename| {
             gpa.free(filename);
         }
@@ -127,6 +142,13 @@ pub const GitHubRepoLanguages = struct {
 
             const idx = current_index orelse continue;
             const language = &build_languages.items[idx];
+
+            if (std.mem.startsWith(u8, trimmed, "type:")) {
+                const value = stripYamlScalar(trimmed["type:".len..]);
+                language.lang_type = std.meta.stringToEnum(LangType, value) orelse .unknown;
+                active_list = .none;
+                continue;
+            }
 
             if (std.mem.startsWith(u8, trimmed, "color:")) {
                 const value = stripYamlScalar(trimmed["color:".len..]);
@@ -184,6 +206,7 @@ pub const GitHubRepoLanguages = struct {
         for (build_languages.items, definitions) |*src, *dest| {
             dest.* = .{
                 .name = src.name,
+                .lang_type = src.lang_type,
                 .color = src.color,
                 .extensions = try src.extensions.toOwnedSlice(gpa),
                 .filenames = try src.filenames.toOwnedSlice(gpa),
@@ -209,6 +232,19 @@ pub const GitHubRepoLanguages = struct {
             definition.deinit(gpa);
         }
         gpa.free(self.definitions);
+    }
+
+    pub fn findByName(
+        self: @This(),
+        lang_name: []const u8,
+    ) ?*const LanguageDefinition {
+        for (self.definitions) |*definition| {
+            if (std.mem.eql(u8, definition.name, lang_name)) {
+                return definition;
+            }
+        }
+
+        return null;
     }
 
     pub fn findByPath(self: @This(), path: []const u8) ?*const LanguageDefinition {
@@ -268,6 +304,7 @@ pub const GitHubRepoLanguages = struct {
 
 pub const LanguageLineStats = struct {
     name: []const u8,
+    lang_type: LangType = .unknown,
     color: ?[]const u8 = null,
     extensions: [][]const u8 = &.{},
     additions: u32 = 0,
@@ -276,12 +313,15 @@ pub const LanguageLineStats = struct {
 
     pub fn deinit(self: @This(), gpa: std.mem.Allocator) void {
         gpa.free(self.name);
+
         if (self.color) |color| {
             gpa.free(color);
         }
+
         for (self.extensions) |extension| {
             gpa.free(extension);
         }
+
         if (self.extensions.len > 0) {
             gpa.free(self.extensions);
         }
@@ -401,13 +441,21 @@ fn makeLanguageLineStats(
     if (definition) |language| {
         return .{
             .name = try gpa.dupe(u8, language.name),
-            .color = if (language.color) |color| try gpa.dupe(u8, color) else null,
-            .extensions = try dupStringSlice(gpa, language.extensions),
+            .lang_type = language.lang_type,
+            .color = if (language.color) |color|
+                try gpa.dupe(u8, color)
+            else
+                null,
+            .extensions = try dupStringSlice(
+                gpa,
+                language.extensions,
+            ),
         };
     }
 
     return .{
         .name = try gpa.dupe(u8, "Other"),
+        .lang_type = .unknown,
         .color = null,
         .extensions = &.{},
     };
