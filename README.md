@@ -3,9 +3,8 @@
 ![](https://raw.githubusercontent.com/profile-icons/github-stats-modified/refs/heads/generated/overview.svg)
 ![](https://raw.githubusercontent.com/profile-icons/github-stats-modified/refs/heads/generated/languages.svg)
 
-Generate visualizations of GitHub user and repository statistics with GitHub   
-Actions. Visualizations can also include data from private repositories, and   
-from repositories you have contributed to, but don't own. Contributions welcome!  
+Generate visualizations of GitHub user and repository statistics with GitHub Actions. Visualizations can also include    
+data from private repositories, and from repositories you have contributed to, but don't own. Contributions welcome!   
 
 > Modification of [jstrieb/github-stats](https://github.com/jstrieb/github-stats):
 
