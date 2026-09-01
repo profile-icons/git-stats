@@ -52,12 +52,33 @@ tr {
   vertical-align: top;
 }
 
+.overview-root.rtl .title-cell,
+.overview-root.rtl .label-cell,
+.overview-root.rtl .value-cell {
+  text-align: right;
+}
+
+.overview-root.rtl .title-cell,
+.overview-root.rtl .label-cell {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+.overview-root.rtl .value-cell {
+  direction: ltr;
+  text-align: right;
+}
+
+.overview-root.rtl .octicon {
+  margin-right: 0;
+  margin-left: 1ch;
+}
+
 @keyframes slideIn {
   to {
     transform: translateX(0);
   }
 }
-
 
 @media (prefers-color-scheme: light) {
   #background {
