@@ -107,7 +107,6 @@ const Args = struct {
     }
 };
 
-
 fn isExcludeLangType(
     lang_type: Statistics.LangType,
     args: *const Args,
