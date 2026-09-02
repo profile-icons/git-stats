@@ -52,21 +52,21 @@ tr {
   vertical-align: top;
 }
 
-.overview-root.rtl .title-cell,
-.overview-root.rtl .label-cell,
-.overview-root.rtl .value-cell {
-  text-align: right;
+.overview-root.rtl table {
+  direction: rtl;
 }
 
 .overview-root.rtl .title-cell,
 .overview-root.rtl .label-cell {
+  text-align: right;
   direction: rtl;
   unicode-bidi: plaintext;
 }
 
 .overview-root.rtl .value-cell {
   direction: ltr;
-  text-align: right;
+  unicode-bidi: isolate;
+  text-align: left;
 }
 
 .overview-root.rtl .octicon {

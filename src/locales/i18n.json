@@ -43,9 +43,9 @@
     "lines_of_code_changed_str": "Líneas de código modificadas",
     "repo_traffic_str": "Tráfico del repositorio (últimas 2 semanas)",
     "repos_with_contributions_str": "Repositorios con contribuciones",
-    "programming_languages_str": "Lenguajes de programación",
-    "by_line_changes_str": "por cambios de líneas",
-    "by_file_size_str": "por tamaño de archivo"
+    "programming_languages_str": "Lenguajes",
+    "by_line_changes_str": "cambios de línea",
+    "by_file_size_str": "tamaño de archivo"
   },
   "fr": {
     "github_statistics_str": "Statistiques GitHub pour",
@@ -55,9 +55,9 @@
     "lines_of_code_changed_str": "Lignes de code modifiées",
     "repo_traffic_str": "Trafic du dépôt (2 dernières semaines)",
     "repos_with_contributions_str": "Dépôts avec contributions",
-    "programming_languages_str": "Langages de programmation",
-    "by_line_changes_str": "par modifications de lignes",
-    "by_file_size_str": "par taille de fichier"
+    "programming_languages_str": "Langages",
+    "by_line_changes_str": "lignes modifiées",
+    "by_file_size_str": "taille du fichier"
   },
   "pt": {
     "github_statistics_str": "Estatísticas do GitHub para",
@@ -67,9 +67,9 @@
     "lines_of_code_changed_str": "Linhas de código alteradas",
     "repo_traffic_str": "Tráfego do repositório (últimas 2 semanas)",
     "repos_with_contributions_str": "Repositórios com contribuições",
-    "programming_languages_str": "Linguagens de programação",
-    "by_line_changes_str": "por alterações de linhas",
-    "by_file_size_str": "por tamanho do arquivo"
+    "programming_languages_str": "Linguagens",
+    "by_line_changes_str": "linhas alteradas",
+    "by_file_size_str": "tamanho do arquivo"
   },
   "ru": {
     "github_statistics_str": "Статистика GitHub для",
@@ -77,11 +77,11 @@
     "forks_str": "Форки",
     "all_time_contributions_str": "Вклад за всё время",
     "lines_of_code_changed_str": "Изменённые строки кода",
-    "repo_traffic_str": "Трафик репозитория (за последние 2 недели)",
+    "repo_traffic_str": "Трафик (2 недели)",
     "repos_with_contributions_str": "Репозитории с вкладом",
-    "programming_languages_str": "Языки программирования",
-    "by_line_changes_str": "по изменениям строк",
-    "by_file_size_str": "по размеру файла"
+    "programming_languages_str": "Языки",
+    "by_line_changes_str": "изменения строк",
+    "by_file_size_str": "размер файла"
   },
   "de": {
     "github_statistics_str": "GitHub-Statistiken für",
@@ -115,9 +115,9 @@
     "lines_of_code_changed_str": "Righe di codice modificate",
     "repo_traffic_str": "Traffico del repository (ultime 2 settimane)",
     "repos_with_contributions_str": "Repository con contributi",
-    "programming_languages_str": "Linguaggi di programmazione",
-    "by_line_changes_str": "per modifiche alle righe",
-    "by_file_size_str": "per dimensione del file"
+    "programming_languages_str": "Linguaggi",
+    "by_line_changes_str": "righe modificate",
+    "by_file_size_str": "dimensione file"
   },
   "pl": {
     "github_statistics_str": "Statystyki GitHub dla",
@@ -151,9 +151,9 @@
     "lines_of_code_changed_str": "Gewijzigde coderegels",
     "repo_traffic_str": "Repositoryverkeer (afgelopen 2 weken)",
     "repos_with_contributions_str": "Repositories met bijdragen",
-    "programming_languages_str": "Programmeertalen",
-    "by_line_changes_str": "op basis van regelwijzigingen",
-    "by_file_size_str": "op bestandsgrootte"
+    "programming_languages_str": "Talen",
+    "by_line_changes_str": "regelwijzigingen",
+    "by_file_size_str": "bestandsgrootte"
   },
   "af": {
     "github_statistics_str": "GitHub-statistiek vir",
@@ -175,9 +175,9 @@
     "lines_of_code_changed_str": "Linii de cod modificate",
     "repo_traffic_str": "Traficul depozitului (ultimele 2 săptămâni)",
     "repos_with_contributions_str": "Depozite cu contribuții",
-    "programming_languages_str": "Limbaje de programare",
-    "by_line_changes_str": "după modificările de linii",
-    "by_file_size_str": "după dimensiunea fișierului"
+    "programming_languages_str": "Limbaje",
+    "by_line_changes_str": "linii modificate",
+    "by_file_size_str": "dimensiune fișier"
   },
   "hu": {
     "github_statistics_str": "GitHub-statisztikák ehhez:",
@@ -197,11 +197,11 @@
     "forks_str": "Forks",
     "all_time_contributions_str": "Συνολικές συνεισφορές",
     "lines_of_code_changed_str": "Γραμμές κώδικα που άλλαξαν",
-    "repo_traffic_str": "Κίνηση αποθετηρίου (τελευταίες 2 εβδομάδες)",
+    "repo_traffic_str": "Κίνηση (2 εβδομάδες)",
     "repos_with_contributions_str": "Αποθετήρια με συνεισφορές",
-    "programming_languages_str": "Γλώσσες προγραμματισμού",
-    "by_line_changes_str": "κατά αλλαγές γραμμών",
-    "by_file_size_str": "κατά μέγεθος αρχείου"
+    "programming_languages_str": "Γλώσσες",
+    "by_line_changes_str": "αλλαγές γραμμών",
+    "by_file_size_str": "μέγεθος αρχείου"
   },
   "cs": {
     "github_statistics_str": "Statistiky GitHub pro",
@@ -221,11 +221,11 @@
     "forks_str": "Форкови",
     "all_time_contributions_str": "Доприноси за све време",
     "lines_of_code_changed_str": "Промењени редови кода",
-    "repo_traffic_str": "Саобраћај репозиторијума (последње 2 недеље)",
+    "repo_traffic_str": "Саобраћај (2 недеље)",
     "repos_with_contributions_str": "Репозиторијуми са доприносима",
-    "programming_languages_str": "Програмски језици",
-    "by_line_changes_str": "према променама редова",
-    "by_file_size_str": "према величини датотеке"
+    "programming_languages_str": "Језици",
+    "by_line_changes_str": "промене редова",
+    "by_file_size_str": "величина датотеке"
   },
   "bg": {
     "github_statistics_str": "GitHub статистика за",
@@ -233,11 +233,11 @@
     "forks_str": "Форкове",
     "all_time_contributions_str": "Приноси за всички времена",
     "lines_of_code_changed_str": "Променени редове код",
-    "repo_traffic_str": "Трафик на хранилището (последните 2 седмици)",
+    "repo_traffic_str": "Трафик (2 седмици)",
     "repos_with_contributions_str": "Хранилища с приноси",
-    "programming_languages_str": "Езици за програмиране",
-    "by_line_changes_str": "по промени в редовете",
-    "by_file_size_str": "по размер на файла"
+    "programming_languages_str": "Езици",
+    "by_line_changes_str": "променени редове",
+    "by_file_size_str": "размер на файла"
   },
   "da": {
     "github_statistics_str": "GitHub-statistik for",
@@ -307,9 +307,9 @@
     "lines_of_code_changed_str": "Línies de codi modificades",
     "repo_traffic_str": "Trànsit del repositori (últimes 2 setmanes)",
     "repos_with_contributions_str": "Repositoris amb contribucions",
-    "programming_languages_str": "Llenguatges de programació",
-    "by_line_changes_str": "per canvis de línies",
-    "by_file_size_str": "per mida del fitxer"
+    "programming_languages_str": "Llenguatges",
+    "by_line_changes_str": "canvis de línia",
+    "by_file_size_str": "mida del fitxer"
   },
   "be": {
     "github_statistics_str": "Статыстыка GitHub для",
@@ -343,9 +343,9 @@
     "lines_of_code_changed_str": "Rreshta kodi të ndryshuar",
     "repo_traffic_str": "Trafiku i repos (2 javët e fundit)",
     "repos_with_contributions_str": "Repo me kontribute",
-    "programming_languages_str": "Gjuhë programimi",
-    "by_line_changes_str": "sipas ndryshimeve të rreshtave",
-    "by_file_size_str": "sipas madhësisë së skedarit"
+    "programming_languages_str": "Gjuhë",
+    "by_line_changes_str": "ndryshime rreshtash",
+    "by_file_size_str": "madhësi skedari"
   },
   "lt": {
     "github_statistics_str": "GitHub statistika skirta",
@@ -389,11 +389,11 @@
     "forks_str": "Форкови",
     "all_time_contributions_str": "Придонеси за цело време",
     "lines_of_code_changed_str": "Променети линии код",
-    "repo_traffic_str": "Сообраќај на складиштето (последните 2 недели)",
+    "repo_traffic_str": "Сообраќај (2 недели)",
     "repos_with_contributions_str": "Складишта со придонеси",
-    "programming_languages_str": "Програмски јазици",
-    "by_line_changes_str": "според промени на линии",
-    "by_file_size_str": "според големината на датотеката"
+    "programming_languages_str": "Јазици",
+    "by_line_changes_str": "промени на линии",
+    "by_file_size_str": "големина на фајл"
   },
   "et": {
     "github_statistics_str": "GitHubi statistika kasutajale",
@@ -415,9 +415,9 @@
     "lines_of_code_changed_str": "Línte cód athraithe",
     "repo_traffic_str": "Trácht stórtha (2 sheachtain anuas)",
     "repos_with_contributions_str": "Stórtha le ranníocaíochtaí",
-    "programming_languages_str": "Teangacha ríomhchlárúcháin",
-    "by_line_changes_str": "de réir athruithe línte",
-    "by_file_size_str": "de réir mhéid comhaid"
+    "programming_languages_str": "Teangacha",
+    "by_line_changes_str": "athruithe línte",
+    "by_file_size_str": "méid comhaid"
   },
   "cy": {
     "github_statistics_str": "Ystadegau GitHub ar gyfer",
@@ -427,9 +427,9 @@
     "lines_of_code_changed_str": "Llinellau cod a newidiwyd",
     "repo_traffic_str": "Traffig ystorfa (2 wythnos ddiwethaf)",
     "repos_with_contributions_str": "Ystorfeydd â chyfraniadau",
-    "programming_languages_str": "Ieithoedd rhaglennu",
-    "by_line_changes_str": "yn ôl newidiadau llinell",
-    "by_file_size_str": "yn ôl maint ffeil"
+    "programming_languages_str": "Ieithoedd",
+    "by_line_changes_str": "newidiadau llinell",
+    "by_file_size_str": "maint ffeil"
   },
   "eu": {
     "github_statistics_str": "GitHub estatistikak honentzat:",
@@ -439,9 +439,9 @@
     "lines_of_code_changed_str": "Aldatutako kode-lerroak",
     "repo_traffic_str": "Biltegiaren trafikoa (azken 2 asteak)",
     "repos_with_contributions_str": "Ekarpenak dituzten biltegiak",
-    "programming_languages_str": "Programazio-lengoaiak",
-    "by_line_changes_str": "lerro-aldaketen arabera",
-    "by_file_size_str": "fitxategi-tamainaren arabera"
+    "programming_languages_str": "Lengoaiak",
+    "by_line_changes_str": "lerro-aldaketak",
+    "by_file_size_str": "fitxategi-tamaina"
   },
   "gl": {
     "github_statistics_str": "Estatísticas de GitHub para",
@@ -451,9 +451,9 @@
     "lines_of_code_changed_str": "Liñas de código modificadas",
     "repo_traffic_str": "Tráfico do repositorio (últimas 2 semanas)",
     "repos_with_contributions_str": "Repositorios con contribucións",
-    "programming_languages_str": "Linguaxes de programación",
-    "by_line_changes_str": "por cambios de liñas",
-    "by_file_size_str": "por tamaño do ficheiro"
+    "programming_languages_str": "Linguaxes",
+    "by_line_changes_str": "cambios de liña",
+    "by_file_size_str": "tamaño do ficheiro"
   },
   "is": {
     "github_statistics_str": "GitHub-tölfræði fyrir",
@@ -463,9 +463,9 @@
     "lines_of_code_changed_str": "Breyttar kóðalínur",
     "repo_traffic_str": "Umferð geymslu (síðustu 2 vikur)",
     "repos_with_contributions_str": "Geymslur með framlögum",
-    "programming_languages_str": "Forritunarmál",
-    "by_line_changes_str": "eftir línubreytingum",
-    "by_file_size_str": "eftir skráarstærð"
+    "programming_languages_str": "Tungumál",
+    "by_line_changes_str": "línubreytingar",
+    "by_file_size_str": "skráarstærð"
   },
   "mt": {
     "github_statistics_str": "Statistika ta' GitHub għal",
@@ -475,9 +475,9 @@
     "lines_of_code_changed_str": "Linji ta' kodiċi mibdula",
     "repo_traffic_str": "Traffiku tar-repożitorju (l-aħħar ġimagħtejn)",
     "repos_with_contributions_str": "Repożitorji b'kontribuzzjonijiet",
-    "programming_languages_str": "Lingwi ta' programmar",
-    "by_line_changes_str": "skont il-bidliet fil-linji",
-    "by_file_size_str": "skont id-daqs tal-fajl"
+    "programming_languages_str": "Lingwi",
+    "by_line_changes_str": "bidliet fil-linji",
+    "by_file_size_str": "daqs tal-fajl"
   },
   "lb": {
     "github_statistics_str": "GitHub-Statistike fir",
@@ -497,11 +497,11 @@
     "forks_str": "Forcaichean",
     "all_time_contributions_str": "Tabhartasan thar gach àm",
     "lines_of_code_changed_str": "Loidhnichean còd air an atharrachadh",
-    "repo_traffic_str": "Trafaig an tasgaidh (2 sheachdain mu dheireadh)",
+    "repo_traffic_str": "Trafaig (2 sheachdain)",
     "repos_with_contributions_str": "Tasgaidhean le tabhartasan",
-    "programming_languages_str": "Cànanan prògramachaidh",
-    "by_line_changes_str": "a rèir atharrachaidhean loidhne",
-    "by_file_size_str": "a rèir meud an fhaidhle"
+    "programming_languages_str": "Cànanan",
+    "by_line_changes_str": "atharraichean loidhne",
+    "by_file_size_str": "meud faidhle"
   },
   "zh": {
     "github_statistics_str": "GitHub 统计数据：",
@@ -571,9 +571,9 @@
     "lines_of_code_changed_str": "Baris kode yang diubah",
     "repo_traffic_str": "Trafik repositori (2 minggu terakhir)",
     "repos_with_contributions_str": "Repositori dengan kontribusi",
-    "programming_languages_str": "Bahasa pemrograman",
-    "by_line_changes_str": "berdasarkan perubahan baris",
-    "by_file_size_str": "berdasarkan ukuran file"
+    "programming_languages_str": "Bahasa",
+    "by_line_changes_str": "perubahan baris",
+    "by_file_size_str": "ukuran file"
   },
   "ur": {
     "github_statistics_str": "GitHub کے اعداد و شمار:",
@@ -679,9 +679,9 @@
     "lines_of_code_changed_str": "Mga linyang binago sa code",
     "repo_traffic_str": "Trapiko ng repository (nakaraang 2 linggo)",
     "repos_with_contributions_str": "Mga repository na may kontribusyon",
-    "programming_languages_str": "Mga programming language",
-    "by_line_changes_str": "ayon sa mga pagbabago sa linya",
-    "by_file_size_str": "ayon sa laki ng file"
+    "programming_languages_str": "Mga wika",
+    "by_line_changes_str": "pagbabago sa linya",
+    "by_file_size_str": "laki ng file"
   },
   "ta": {
     "github_statistics_str": "GitHub புள்ளிவிவரங்கள்:",
@@ -689,11 +689,11 @@
     "forks_str": "ஃபோர்க்குகள்",
     "all_time_contributions_str": "இதுவரையிலான மொத்த பங்களிப்புகள்",
     "lines_of_code_changed_str": "மாற்றப்பட்ட குறியீட்டு வரிகள்",
-    "repo_traffic_str": "களஞ்சிய போக்குவரத்து (கடந்த 2 வாரங்கள்)",
+    "repo_traffic_str": "போக்குவரத்து (2 வாரங்கள்)",
     "repos_with_contributions_str": "பங்களிப்புகள் உள்ள களஞ்சியங்கள்",
-    "programming_languages_str": "நிரலாக்க மொழிகள்",
-    "by_line_changes_str": "வரி மாற்றங்களின் அடிப்படையில்",
-    "by_file_size_str": "கோப்பு அளவின்படி"
+    "programming_languages_str": "மொழிகள்",
+    "by_line_changes_str": "வரி மாற்றங்கள்",
+    "by_file_size_str": "கோப்பு அளவு"
   },
   "yue": {
     "github_statistics_str": "GitHub 統計：",
@@ -763,9 +763,9 @@
     "lines_of_code_changed_str": "Baris kode sing diowahi",
     "repo_traffic_str": "Trafik repositori (2 minggu kepungkur)",
     "repos_with_contributions_str": "Repositori sing ana kontribusine",
-    "programming_languages_str": "Basa pamrograman",
-    "by_line_changes_str": "adhedhasar owah-owahan baris",
-    "by_file_size_str": "adhedhasar ukuran berkas"
+    "programming_languages_str": "Basa",
+    "by_line_changes_str": "owah-owahan baris",
+    "by_file_size_str": "ukuran berkas"
   },
   "gu": {
     "github_statistics_str": "GitHub આંકડા:",
@@ -787,9 +787,9 @@
     "lines_of_code_changed_str": "ಬದಲಾದ ಕೋಡ್ ಸಾಲುಗಳು",
     "repo_traffic_str": "ರೆಪೊಸಿಟರಿ ಟ್ರಾಫಿಕ್ (ಕಳೆದ 2 ವಾರಗಳು)",
     "repos_with_contributions_str": "ಕೊಡುಗೆಗಳಿರುವ ರೆಪೊಸಿಟರಿಗಳು",
-    "programming_languages_str": "ಪ್ರೋಗ್ರಾಮಿಂಗ್ ಭಾಷೆಗಳು",
-    "by_line_changes_str": "ಸಾಲು ಬದಲಾವಣೆಗಳ ಪ್ರಕಾರ",
-    "by_file_size_str": "ಫೈಲ್ ಗಾತ್ರದ ಪ್ರಕಾರ"
+    "programming_languages_str": "ಭಾಷೆಗಳು",
+    "by_line_changes_str": "ಸಾಲು ಬದಲಾವಣೆ",
+    "by_file_size_str": "ಫೈಲ್ ಗಾತ್ರ"
   },
   "yo": {
     "github_statistics_str": "Àwọn iṣiro GitHub fún",
@@ -823,9 +823,9 @@
     "lines_of_code_changed_str": "ပြောင်းလဲထားသော ကုဒ်လိုင်းများ",
     "repo_traffic_str": "Repository အသွားအလာ (ပြီးခဲ့သည့် ၂ ပတ်)",
     "repos_with_contributions_str": "ပံ့ပိုးမှုရှိသော Repository များ",
-    "programming_languages_str": "ပရိုဂရမ်းမင်း ဘာသာစကားများ",
-    "by_line_changes_str": "လိုင်းပြောင်းလဲမှုအလိုက်",
-    "by_file_size_str": "ဖိုင်အရွယ်အစားအလိုက်"
+    "programming_languages_str": "ဘာသာစကားများ",
+    "by_line_changes_str": "လိုင်းပြောင်းလဲမှု",
+    "by_file_size_str": "ဖိုင်အရွယ်အစား"
   },
   "ln": {
     "github_statistics_str": "Statistiques ya GitHub mpo na",
@@ -835,9 +835,9 @@
     "lines_of_code_changed_str": "Milɔngɔ ya code oyo ebongwani",
     "repo_traffic_str": "Trafic ya ebombelo (poso 2 eleki)",
     "repos_with_contributions_str": "Bibombelo oyo ezali na makabo",
-    "programming_languages_str": "Minɔkɔ ya programmation",
-    "by_line_changes_str": "na kotalela mbongwana ya milɔngɔ",
-    "by_file_size_str": "na kotalela bonene ya fisyé"
+    "programming_languages_str": "Minɔkɔ",
+    "by_line_changes_str": "mbongwana ya milɔngɔ",
+    "by_file_size_str": "bonene ya fisyé"
   },
   "or": {
     "github_statistics_str": "GitHub ପରିସଂଖ୍ୟାନ:",
@@ -859,9 +859,9 @@
     "lines_of_code_changed_str": "മാറ്റിയ കോഡ് വരികൾ",
     "repo_traffic_str": "റിപ്പോസിറ്ററി ട്രാഫിക് (കഴിഞ്ഞ 2 ആഴ്ച)",
     "repos_with_contributions_str": "സംഭാവനകളുള്ള റിപ്പോസിറ്ററികൾ",
-    "programming_languages_str": "പ്രോഗ്രാമിംഗ് ഭാഷകൾ",
-    "by_line_changes_str": "വരി മാറ്റങ്ങൾ അനുസരിച്ച്",
-    "by_file_size_str": "ഫയൽ വലുപ്പം അനുസരിച്ച്"
+    "programming_languages_str": "ഭാഷകൾ",
+    "by_line_changes_str": "വരി മാറ്റങ്ങൾ",
+    "by_file_size_str": "ഫയൽ വലുപ്പം"
   },
   "sd": {
     "github_statistics_str": "GitHub انگ اکر:",
@@ -883,9 +883,9 @@
     "lines_of_code_changed_str": "Baris kode anu dirobah",
     "repo_traffic_str": "Lalu lintas repositori (2 minggu katukang)",
     "repos_with_contributions_str": "Repositori anu aya kontribusina",
-    "programming_languages_str": "Basa pamrograman",
-    "by_line_changes_str": "dumasar kana parobahan baris",
-    "by_file_size_str": "dumasar kana ukuran berkas"
+    "programming_languages_str": "Basa",
+    "by_line_changes_str": "parobahan baris",
+    "by_file_size_str": "ukuran berkas"
   },
   "zu": {
     "github_statistics_str": "Izibalo ze-GitHub zika",
