@@ -61,7 +61,7 @@ jobs:
         EXCLUDE_LANGS_TYPE_PROSE: "true"
         EXCLUDE_LANGS_TYPE_MARKUP: "false"
         EXCLUDE_LANGS_TYPE_PROGRAMMING: "false"
-        THEME: ${{ vars.THEME || 'github' }}
+        THEME: ${{ secrets.THEME }}
         SILENT: "true"
         # TODO: Remove this when they get their API working again
         # https://github.com/orgs/community/discussions/192970
