@@ -1,4 +1,4 @@
-<!-- modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26. -->
+<!-- modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26 - 03/09/26. -->
 <svg id="portable-dark-mode-support" width="360" height="210" xmlns="http://www.w3.org/2000/svg">
 <style>
 svg {
@@ -80,43 +80,7 @@ tr {
   }
 }
 
-@media (prefers-color-scheme: light) {
-  #background {
-    fill: white;
-    stroke-width: 1px;
-  }
-
-  th {
-    color: rgb(3, 102, 214);
-  }
-
-  td {
-    color: rgb(88, 96, 105);
-  }
-
-  .octicon {
-    fill: rgb(88, 96, 105);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  #background {
-    fill: #0d1117;
-    stroke-width: 0.5px;
-  }
-
-  th {
-    color: #58a6ff;
-  }
-
-  td {
-    color: #c9d1d9;
-  }
-
-  .octicon {
-    fill: #8b949e;
-  }
-}
+{{ theme_css }}
 </style>
 <g>
 <rect x="5" y="5" id="background" />

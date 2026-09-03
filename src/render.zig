@@ -1,7 +1,8 @@
-// created by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 01/09/26.
+// created by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 01/09/26 - 03/09/26.
 const std = @import("std");
 const i18n = @import("i18n.zig");
 const templateFill = @import("template.zig").fill;
+const themes = @import("theme.zig");
 
 fn codeCount(text: []const u8) usize {
     return std.unicode.utf8CountCodepoints(text) catch text.len;
@@ -239,6 +240,7 @@ pub fn overview(
     stats: anytype,
     template: []const u8,
     translations: std.json.ObjectMap,
+    selected_theme: themes.Theme,
 ) ![]const u8 {
     const allocator = arena.allocator();
     return templateFill(
@@ -246,12 +248,14 @@ pub fn overview(
         template,
         struct {
             i18n_overview_blocks: []const u8,
+            theme_css: []const u8,
         }{
             .i18n_overview_blocks = try overviewLocaleBlocks(
                 allocator,
                 translations,
                 stats,
             ),
+            .theme_css = themes.overviewCss(selected_theme),
         },
     );
 }
@@ -261,6 +265,7 @@ pub fn languages(
     stats: anytype,
     template: []const u8,
     translations: std.json.ObjectMap,
+    selected_theme: themes.Theme,
 ) ![]const u8 {
     const allocator = arena.allocator();
 
@@ -318,6 +323,7 @@ pub fn languages(
         template,
         struct {
             i18n_languages_blocks: []const u8,
+            theme_css: []const u8,
         }{
             .i18n_languages_blocks = try languagesLocaleBlocks(
                 allocator,
@@ -326,6 +332,7 @@ pub fn languages(
                 progress_html,
                 lang_list_html,
             ),
+            .theme_css = themes.languagesCss(selected_theme),
         },
     );
 }

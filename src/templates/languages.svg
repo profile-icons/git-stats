@@ -1,4 +1,4 @@
-<!-- modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26. -->
+<!-- modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26 - 03/09/26. -->
 <svg id="portable-dark-mode-support" width="460" height="210" xmlns="http://www.w3.org/2000/svg">
 <style>
 svg {
@@ -89,70 +89,7 @@ div.ellipsis {
   direction: rtl;
 }
 
-@media (prefers-color-scheme: light) {
-  #background {
-    fill: #ffffff;
-    stroke-width: 1px;
-  }
-
-  h2 {
-    color: rgb(36, 41, 46);
-    fill: rgb(36, 41, 46);
-  }
-
-  .octicon {
-    fill: rgb(88, 96, 105);
-  }
-
-  .progress {
-    background-color: rgb(225, 228, 232);
-  }
-
-  .progress-item {
-    outline: 2px solid rgb(225, 228, 232);
-  }
-
-  .lang {
-    color: rgb(36, 41, 46);
-  }
-
-  .percent {
-    color: rgb(88, 96, 105);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  #background {
-    fill: #0d1117;
-    stroke-width: 0.5px;
-  }
-
-  h2 {
-    color: #c9d1d9;
-    fill: #c9d1d9;
-  }
-
-  .octicon {
-    color: #8b949e;
-    fill: #8b949e;
-  }
-
-  .progress{
-    background-color: rgba(110, 118, 129, 0.4);
-  }
-
-  .progress-item {
-    outline: 2px solid #393f47;
-  }
-
-  .lang {
-    color: #c9d1d9;
-  }
-
-  .percent {
-    color: #8b949e;
-  }
-}
+{{ theme_css }}
 </style>
 <g>
 <rect x="5" y="5" id="background" />

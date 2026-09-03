@@ -1,4 +1,4 @@
-// modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26 - 01/09/26.
+// modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26 - 03/09/26.
 const builtin = @import("builtin");
 const std = @import("std");
 const version = @import("options").version;
@@ -7,6 +7,7 @@ const argparse = @import("argparse.zig");
 const glob = @import("glob.zig");
 const i18n = @import("i18n.zig");
 const render = @import("render.zig");
+const themes = @import("theme.zig");
 
 const HttpClient = @import("http_client.zig");
 const Statistics = @import("statistics.zig");
@@ -62,6 +63,7 @@ const Args = struct {
     version: bool = false,
     dump_overview_template: ?[]const u8 = null,
     dump_languages_template: ?[]const u8 = null,
+    theme: ?[]const u8 = "github",
 
     const Self = @This();
 
@@ -74,6 +76,13 @@ const Args = struct {
                     try stderr.print(
                         "You must pass an input file or a GitHub token.\n",
                         .{},
+                    );
+                    return false;
+                }
+                if (themes.parse(a.theme orelse "github") == null) {
+                    try stderr.print(
+                        "Unknown theme '{s}'. Refer to theme.zig to see the list of supported themes.\n",
+                        .{a.theme orelse ""},
                     );
                     return false;
                 }
@@ -231,6 +240,8 @@ pub fn main(init: std.process.Init) !void {
         );
     }
 
+    const selected_theme = themes.parse(args.theme orelse "github") orelse unreachable;
+
     var i18n_arena = std.heap.ArenaAllocator.init(allocator);
     defer i18n_arena.deinit();
 
@@ -338,6 +349,7 @@ pub fn main(init: std.process.Init) !void {
                 else
                     embedded_overview_template,
                 i18n_json,
+                selected_theme,
             ),
         );
 
@@ -352,6 +364,7 @@ pub fn main(init: std.process.Init) !void {
                 else
                     embedded_languages_template,
                 i18n_json,
+                selected_theme,
             ),
         );
     }

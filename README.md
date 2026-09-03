@@ -11,6 +11,7 @@ data from private repositories, and from repositories you have contributed to, b
 * optionally visualize language stats by line changes
   * backup: estimated line changes weighted by repo language byte share
 * support portable dark-mode (also external to GitHub `README.md`) and [i18n](https://github.com/profile-icons/github-stats-modified/issues/1)
+* optional themes, such as `github` (default), `github-soft`, `github-colorblind`, `github_high_contrast`, etc.
 * widen `languages.svg` to use excess `README.md` space and list more language stats
 * display all traffic (views + clones) stats; to better represent automation and bots
 * include only an exclusive list of repositories for statistics and skip all others
@@ -163,6 +164,9 @@ and retrieve the images.
    - Lists for `EXCLUDE_REPOS` and `EXCLUDE_LANGS` can use globbing patterns.
      For example, to exclude all repos by user "jstrieb", add `jstrieb/*` to
      `EXCLUDE_REPOS`.
+   - To optionally select from an existing theme, add the theme name,
+     such as `github_tritanopia` for example, to a secret called `THEME`.
+     If you want to include a new theme, add it to the `theme.zig` file.
    - These can also be set directly in [the Actions
      workflow](.github/workflows/main.yml), but you should set them as secrets
      if you want to keep the repository names or languages private.

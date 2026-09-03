@@ -1,4 +1,4 @@
-# modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26.
+# modified by Adam Ross (https://www.github.com/profile-icons/github-stats-modified), 26/05/26 - 03/09/26.
 name: Generate Stats Images
 
 on:
@@ -61,6 +61,7 @@ jobs:
         EXCLUDE_LANGS_TYPE_PROSE: "true"
         EXCLUDE_LANGS_TYPE_MARKUP: "false"
         EXCLUDE_LANGS_TYPE_PROGRAMMING: "false"
+        THEME: ${{ vars.THEME || 'github' }}
         SILENT: "true"
         # TODO: Remove this when they get their API working again
         # https://github.com/orgs/community/discussions/192970
