@@ -92,16 +92,16 @@ div.ellipsis {
 @media (prefers-color-scheme: light) {
 :root {
   color-scheme: light;
-  --theme-bg: #ffffff;
-  --theme-fg: #1f2328;
-  --theme-muted: #59636e;
-  --theme-accent: #0969da;
-  --theme-success: #1a7f37;
-  --theme-attention: #9a6700;
-  --theme-danger: #d1242f;
-  --theme-done: #8250df;
-  --theme-neutral-muted: #818b981f;
-  --theme-border: #d1d9e0;
+  --theme-bg: #eceff4;
+  --theme-fg: #2e3440;
+  --theme-muted: #4c566a;
+  --theme-accent: #5e81ac;
+  --theme-success: #a3be8c;
+  --theme-attention: #ebcb8b;
+  --theme-danger: #bf616a;
+  --theme-done: #b48ead;
+  --theme-neutral-muted: #e5e9f0;
+  --theme-border: #d8dee9;
   --theme-stroke-width: 1px;
 }
 }
@@ -109,17 +109,17 @@ div.ellipsis {
 @media (prefers-color-scheme: dark) {
 :root {
   color-scheme: dark;
-  --theme-bg: #0d1117;
-  --theme-fg: #f0f6fc;
-  --theme-muted: #9198a1;
-  --theme-accent: #4493f8;
-  --theme-success: #3fb950;
-  --theme-attention: #d29922;
-  --theme-danger: #f85149;
-  --theme-done: #ab7df8;
-  --theme-neutral-muted: #656c7633;
-  --theme-border: #3d444d;
-  --theme-stroke-width: 0.5px;
+  --theme-bg: #2e3440;
+  --theme-fg: #eceff4;
+  --theme-muted: #81a1c1;
+  --theme-accent: #88c0d0;
+  --theme-success: #a3be8c;
+  --theme-attention: #ebcb8b;
+  --theme-danger: #bf616a;
+  --theme-done: #b48ead;
+  --theme-neutral-muted: #3b4252;
+  --theme-border: #4c566a;
+  --theme-stroke-width: 1px;
 }
 }#background {
   fill: var(--theme-bg);
