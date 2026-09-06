@@ -889,6 +889,5 @@ const palenight_css = palenight_palette_css ++ card_css;
 const rose_pine_css = rose_pine_palette_css ++ card_css;
 const solarized_css = solarized_palette_css ++ card_css;
 const synthwave_84_css = synthwave_84_palette_css ++ card_css;
-const horizon_css = horizon_palette_css ++ card_css;
 const tokyo_night_css = tokyo_night_palette_css ++ card_css;
 const tomorrow_css = tomorrow_palette_css ++ card_css;
