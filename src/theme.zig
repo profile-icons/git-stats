@@ -44,7 +44,7 @@ pub fn parse(value: []const u8) ?Theme {
     if (std.ascii.eqlIgnoreCase(value, "nord")) return .nord;
     if (matches(value, "one-dark", "one_dark")) return .one_dark;
     if (std.ascii.eqlIgnoreCase(value, "palenight")) return .palenight;
-    if (matches(value, "rose-pine", "rose_pine")) return .rose;
+    if (matches(value, "rose-pine", "rose_pine")) return .rose_pine;
     if (std.ascii.eqlIgnoreCase(value, "solarized")) return .solarized;
     if (matches(value, "synthwave-84", "synthwave_84") or std.ascii.eqlIgnoreCase(value, "synthwave84")) return .synthwave_84;
     if (matches(value, "tokyo-night", "tokyo_night")) return .tokyo_night;
